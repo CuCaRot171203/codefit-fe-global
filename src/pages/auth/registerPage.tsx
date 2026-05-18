@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import Logo from '@/assets/images/LOGO_CODEFIT.png';
-import { API_ENDPOINTS } from '@/config/api';
 import { notification } from 'antd';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * Khởi tạo interface
@@ -46,6 +46,7 @@ const getPasswordStrength = (password: string): PasswordStrength => {
 const RegisterPage = () => {
   // Khởi tạo useNavigate
   const navigate = useNavigate();
+  const { register: authRegister } = useAuth();
 
   // Khởi tạo các state
   const [isLoading, setIsLoading] = useState(false);
@@ -167,26 +168,18 @@ const RegisterPage = () => {
 
     // Gọi API, gửi request đăng ký
     try {
-      const response = await fetch(API_ENDPOINTS.auth.register, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username.trim(), email: email.trim(), password: passwordValue }),
-      });
+      const result = await authRegister(email.trim(), username.trim(), passwordValue);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         notification.success({
-      message: 'Thành công',
-      description: 'Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...',
-    });
+        message: 'Thành công',
+        description: 'Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...',
+      });
         setTimeout(() => {
           navigate('/dang-nhap');
         }, 1500);
       } else {
-        const errorMsg = data.message || data.error || '';
+        const errorMsg = result.message || '';
         if (errorMsg.toLowerCase().includes('email') && errorMsg.toLowerCase().includes('exist')) {
           notification.error({
           message: 'Lỗi',

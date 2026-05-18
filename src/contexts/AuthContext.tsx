@@ -84,51 +84,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, navigate]);
 
   const login = async (email: string, password: string) => {
-    setIsLoggingIn(true);
-    const res = await authService.login(email, password);
-    if (res.success && res.data && typeof res.data === 'object' && 'token' in res.data) {
-      const { token: newToken } = res.data as { token: string; user: Record<string, unknown> };
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      if ('user' in res.data) {
-        const rawUser = (res.data as { user: Record<string, unknown> }).user;
-        const normalizedUser: User = {
-          id: rawUser.id as string,
-          email: rawUser.email as string,
-          username: rawUser.username as string,
-          role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
-          createdAt: rawUser.createdAt as string,
-        };
-        localStorage.setItem('user', JSON.stringify(normalizedUser));
-        setUser(normalizedUser);
+    try {
+      const res = await authService.login(email, password);
+      if (res.success && res.data && typeof res.data === 'object' && 'token' in res.data) {
+        const { token: newToken } = res.data as { token: string; user: Record<string, unknown> };
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+        if ('user' in res.data) {
+          const rawUser = (res.data as { user: Record<string, unknown> }).user;
+          const normalizedUser: User = {
+            id: rawUser.id as string,
+            email: rawUser.email as string,
+            username: rawUser.username as string,
+            role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
+            createdAt: rawUser.createdAt as string,
+          };
+          localStorage.setItem('user', JSON.stringify(normalizedUser));
+          setUser(normalizedUser);
+        }
+        return { success: true, message: res.message };
       }
+      return { success: false, message: res.message };
+    } catch {
+      return { success: false, message: 'Login failed' };
+    } finally {
+      setIsLoggingIn(false);
     }
-    setIsLoggingIn(false);
-    return { success: res.success, message: res.message };
   };
 
   const register = async (email: string, username: string, password: string) => {
-    setIsLoggingIn(true);
-    const res = await authService.register(email, username, password);
-    if (res.success && res.data && typeof res.data === 'object' && 'token' in res.data) {
-      const { token: newToken } = res.data as { token: string; user: Record<string, unknown> };
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      if ('user' in res.data) {
-        const rawUser = (res.data as { user: Record<string, unknown> }).user;
-        const normalizedUser: User = {
-          id: rawUser.id as string,
-          email: rawUser.email as string,
-          username: rawUser.username as string,
-          role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
-          createdAt: rawUser.createdAt as string,
-        };
-        localStorage.setItem('user', JSON.stringify(normalizedUser));
-        setUser(normalizedUser);
+    try {
+      const res = await authService.register(email, username, password);
+      if (res.success && res.data && typeof res.data === 'object' && 'token' in res.data) {
+        const { token: newToken } = res.data as { token: string; user: Record<string, unknown> };
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+        if ('user' in res.data) {
+          const rawUser = (res.data as { user: Record<string, unknown> }).user;
+          const normalizedUser: User = {
+            id: rawUser.id as string,
+            email: rawUser.email as string,
+            username: rawUser.username as string,
+            role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
+            createdAt: rawUser.createdAt as string,
+          };
+          localStorage.setItem('user', JSON.stringify(normalizedUser));
+          setUser(normalizedUser);
+        }
+        return { success: true, message: res.message };
       }
+      return { success: false, message: res.message };
+    } catch {
+      return { success: false, message: 'Registration failed' };
+    } finally {
+      setIsLoggingIn(false);
     }
-    setIsLoggingIn(false);
-    return { success: res.success, message: res.message };
   };
 
   const logout = () => {

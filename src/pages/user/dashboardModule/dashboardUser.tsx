@@ -87,6 +87,7 @@ interface EnrolledCourse {
 }
 
 interface Evaluation {
+  hasActivity: boolean;
   algorithmSpeed: { score: number; label: string };
   logicThinking: { score: number; label: string };
   bugFixing: { score: number; label: string };
@@ -568,13 +569,34 @@ const DashboardUser = () => {
               <div className="flex items-center gap-2">
                 <Brain className="w-5 h-5 text-primary" />
                 <CardTitle className="text-xl font-headline text-foreground">Đánh giá năng lực</CardTitle>
-                <Badge variant="outline" className="ml-2 text-xs border-primary/50 text-primary dark:border-primary dark:text-primary">
-                  Điểm tổng: <span className="font-bold">{evaluation.finalScore}</span>/100
-                </Badge>
+                {evaluation.hasActivity && (
+                  <Badge variant="outline" className="ml-2 text-xs border-primary/50 text-primary dark:border-primary dark:text-primary">
+                    Điểm tổng: <span className="font-bold">{evaluation.finalScore}</span>/100
+                  </Badge>
+                )}
               </div>
               <CardDescription>5 tiêu chí đánh giá dựa trên hoạt động của bạn</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {!evaluation.hasActivity ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <Brain className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                  </div>
+                  <div>
+                    <p className="font-headline font-semibold text-foreground text-lg">Chưa có dữ liệu đánh giá</p>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+                      Hãy bắt đầu tham gia khóa học, làm bài minitest và nộp bài tập để hệ thống đánh giá năng lực của bạn.
+                    </p>
+                  </div>
+                  <Link to="/user/danh-sach-khoa-hoc">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90">
+                      Khám phá khóa học
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+              <>
               {/* Algorithm Speed */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -699,6 +721,8 @@ const DashboardUser = () => {
                   </span>
                 </div>
               </div>
+              </>
+              )}
             </CardContent>
           </Card>
         )}

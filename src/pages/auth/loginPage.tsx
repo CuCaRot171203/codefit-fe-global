@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff } from 'lucide-react';
 import Logo from '@/assets/images/LOGO_CODEFIT.png';
-import { API_ENDPOINTS } from '@/config/api';
 import { notification } from 'antd';
+import { useAuth } from '@/contexts/AuthContext';
 import { normalizeRole, type AppRole } from '@/utils/roleUtils';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -55,39 +56,19 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await fetch(API_ENDPOINTS.auth.login, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim(), password }),
-      });
+      const result = await authLogin(email.trim(), password);
 
-      const data = await response.json();
-      // console.log('Login response:', data);
-
-      // Backend trả về { success, message, data: { user, token } }
-      const responseData = data?.data;
-
-      if (response.ok && responseData?.token) {
-        const rawRole = responseData.user?.roleName || 'user';
-        const userRole = normalizeRole(rawRole);
-
-        const normalizedUser = {
-          id: responseData.user?.id || '',
-          email: responseData.user?.email || '',
-          username: responseData.user?.username || '',
-          role: userRole,
-          createdAt: responseData.user?.createdAt || new Date().toISOString(),
-        };
-
-        localStorage.setItem('token', responseData.token);
-        localStorage.setItem('user', JSON.stringify(normalizedUser));
-
+      if (result.success) {
         notification.success({
           message: 'Thành công',
           description: 'Đăng nhập thành công! Đang chuyển hướng...',
         });
+
+        // Get role from stored user to determine redirect
+        const storedUser = localStorage.getItem('user');
+        const userRole: AppRole = storedUser
+          ? normalizeRole((JSON.parse(storedUser) as { role?: string }).role || 'user')
+          : 'user';
 
         setTimeout(() => {
           if (userRole === 'admin') {
@@ -99,10 +80,10 @@ const LoginPage = () => {
           }
         }, 1500);
       } else {
-        const errorMsg = data.message || data.error || '';
+        const errorMsg = result.message || '';
         setEmail('');
         setPassword('');
-        
+
         if (errorMsg.toLowerCase().includes('invalid') && errorMsg.toLowerCase().includes('credential')) {
           notification.error({
             message: 'Lỗi đăng nhập',
