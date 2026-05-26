@@ -75,6 +75,11 @@ interface Phase {
   title: string;
   orderIndex: number;
   lessons: Lesson[];
+  minitests?: {
+    id: string;
+    title: string;
+    questions: { id: string; problemId: string; problem: Problem }[];
+  }[];
   _count?: { lessons: number; minitests: number };
 }
 
@@ -1658,6 +1663,59 @@ export default function CourseEditPage() {
                         )}>
                           Chưa có bài học nào
                         </p>
+                      )}
+
+                      {/* Minitests section */}
+                      {phase.minitests && phase.minitests.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-slate-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className={cn("text-sm font-medium", isDark ? "text-purple-400" : "text-purple-600")}>
+                              Minitests ({phase.minitests.length})
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => navigate(`/admin/courses/${course?.id}/minitests`)}
+                              className={cn(
+                                "text-xs gap-1",
+                                isDark ? "text-purple-400 hover:text-purple-300 hover:bg-purple-900/30" : "text-purple-600 hover:text-purple-700"
+                              )}
+                            >
+                              <Settings className="w-3 h-3" />
+                              Quản lý
+                            </Button>
+                          </div>
+                          <div className="space-y-2">
+                            {phase.minitests.map((mt) => (
+                              <div
+                                key={mt.id}
+                                className={cn(
+                                  "flex items-center justify-between p-2 rounded border",
+                                  isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
+                                )}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Settings className={cn("w-4 h-4", isDark ? "text-purple-400" : "text-purple-500")} />
+                                  <span className={cn("text-sm font-medium", isDark ? "text-slate-200" : "text-slate-700")}>
+                                    {mt.title}
+                                  </span>
+                                  <span className={cn(
+                                    "text-xs px-1.5 py-0.5 rounded",
+                                    isDark ? "bg-slate-700 text-slate-400" : "bg-slate-100 text-slate-500"
+                                  )}>
+                                    {mt.questions?.length || 0} câu
+                                  </span>
+                                </div>
+                                <span className={cn(
+                                  "text-xs",
+                                  isDark ? "text-slate-500" : "text-slate-400"
+                                )}>
+                                  {mt.questions?.map(q => q.problem?.title).filter(Boolean).join(', ') || 'Không có câu hỏi'}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
 
                       {/* Add lesson form */}
