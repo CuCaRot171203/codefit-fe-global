@@ -9,8 +9,6 @@ import { Loader2 } from 'lucide-react';
 import type { RootState } from '@/store';
 import { hackathonService } from '@/services/api';
 import {
-  Filter,
-  Flame,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -69,7 +67,7 @@ const LeaderboardHackathon = () => {
     try {
       const res = await hackathonService.getLeaderboard(hackathonId);
       if (res.success && res.data) {
-        const data = res.data;
+        const data = res.data as LeaderboardData;
         // Mark current user
         if (data?.leaderboard && currentUserId) {
           data.leaderboard = data.leaderboard.map((entry: LeaderboardEntry) => ({
@@ -118,7 +116,6 @@ const LeaderboardHackathon = () => {
 
   const renderPodiumCard = (user: LeaderboardEntry, order: number) => {
     const isFirst = user.rank === 1;
-    const width = isFirst ? 'lg:w-80' : 'lg:w-72';
 
     return (
       <div

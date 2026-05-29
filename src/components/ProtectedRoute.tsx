@@ -8,11 +8,6 @@ interface ProtectedRouteProps {
   allowedRoles: AllowedRole[];
 }
 
-const roleRouteMap: Record<AllowedRole, string> = {
-  admin: '/admin',
-  lecture: '/lecture',
-  user: '/user/dashboard',
-};
 
 /**
  * ProtectedRoute - Guard component that:
@@ -50,7 +45,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const normalizedRole = userRole === 'admin' || userRole === 'lecture' ? userRole : 'user';
 
   if (!allowedRoles.includes(normalizedRole as AllowedRole)) {
-    const redirectPath = roleRouteMap[normalizedRole as AllowedRole] || '/';
     return (
       <Navigate
         to="/error/403"

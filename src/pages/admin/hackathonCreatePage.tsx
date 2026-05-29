@@ -585,7 +585,7 @@ export default function HackathonCreatePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <Upload {...uploadProps} showUploadList={false}>
-                  <Button className="w-full" icon={<Image className="w-4 h-4" />}>
+                  <Button className="w-full">
                     Tải lên ảnh
                   </Button>
                 </Upload>
@@ -741,7 +741,7 @@ export default function HackathonCreatePage() {
         title={<span className={isDark ? 'text-white' : ''}>Thêm/Sửa Bài tập</span>}
         styles={{
           mask: { backgroundColor: isDark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.45)' },
-          content: {
+          body: {
             backgroundColor: isDark ? '#1e293b' : '#fff',
             border: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
           },
@@ -751,7 +751,7 @@ export default function HackathonCreatePage() {
           <Button key="cancel" onClick={() => setProblemModalOpen(false)}>
             Hủy
           </Button>,
-          <Button key="save" type="primary" onClick={saveProblem}>
+          <Button key="save" onClick={saveProblem}>
             Lưu bài tập
           </Button>
         ]}

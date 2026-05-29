@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 import {
   Table,
@@ -14,7 +13,6 @@ import {
   Row,
   Col,
   Typography,
-  Checkbox,
   Tooltip,
   Statistic,
 } from 'antd';
@@ -75,7 +73,6 @@ interface Pagination {
 }
 
 export default function LectureSubmissionsPage() {
-  const navigate = useNavigate();
   const { theme } = useAppSelector((state) => state.theme);
   const isDark = theme === 'dark';
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -101,10 +98,10 @@ export default function LectureSubmissionsPage() {
       if (courseFilter) params.append('courseId', courseFilter);
       if (statusFilter) params.append('status', statusFilter);
 
-      const response = await api.get(`/api/lecture/submissions?${params.toString()}`);
-      if (response.success) {
-        setSubmissions(response.data?.submissions ?? []);
-        setPagination((prev) => ({ ...prev, ...response.data }));
+      const response = await api.get<{ submissions: any[]; page: number; limit: number; total: number }>(`/api/lecture/submissions?${params.toString()}`);
+      if (response.success && response.data) {
+        setSubmissions(response.data.submissions ?? []);
+        setPagination((prev) => ({ ...prev, page: response.data!.page, limit: response.data!.limit, total: response.data!.total }));
       }
     } catch (error) {
       console.error('Failed to fetch submissions:', error);
@@ -117,9 +114,9 @@ export default function LectureSubmissionsPage() {
   // Fetch courses for filter
   const fetchCourses = async () => {
     try {
-      const response = await api.get('/api/lecture/courses');
-      if (response.success) {
-        setCourses(response.data ?? []);
+      const response = await api.get<any[]>('/api/lecture/courses');
+      if (response.success && response.data) {
+        setCourses(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch courses:', error);
@@ -137,7 +134,7 @@ export default function LectureSubmissionsPage() {
   // Handle approve single
   const handleApprove = async (id: string) => {
     try {
-      const response = await api.post(`/api/lecture/submissions/${id}/approve`);
+      const response = await api.post(`/api/lecture/submissions/${id}/approve`, {});
       if (response.success) {
         message.success('Đã duyệt bài nộp');
         fetchSubmissions();
@@ -350,7 +347,6 @@ export default function LectureSubmissionsPage() {
             <Statistic
               title="Tổng bài nộp"
               value={pagination.total}
-              styles={{ content: { color: isDark ? '#67e8f9' : '#0B3C5D' } }}
             />
           </Card>
         </Col>
@@ -359,7 +355,6 @@ export default function LectureSubmissionsPage() {
             <Statistic
               title="Chờ duyệt"
               value={pendingCount}
-              styles={{ content: { color: isDark ? '#fcd34d' : '#f59e0b' } }}
             />
           </Card>
         </Col>
@@ -368,7 +363,6 @@ export default function LectureSubmissionsPage() {
             <Statistic
               title="Đã duyệt"
               value={approvedCount}
-              styles={{ content: { color: isDark ? '#34d399' : '#10b981' } }}
             />
           </Card>
         </Col>

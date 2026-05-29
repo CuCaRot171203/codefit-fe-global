@@ -20,7 +20,6 @@ import {
   XCircle,
 } from 'lucide-react';
 
-type HackathonStatus = 'active' | 'upcoming' | 'ended' | 'registered';
 type TabFilter = 'all' | 'active' | 'upcoming' | 'ended' | 'registered';
 
 interface Hackathon {
@@ -120,7 +119,6 @@ const DanhSachHackathon = () => {
   const [endedHackathons, setEndedHackathons] = useState<Hackathon[]>([]);
   const [registeredHackathons, setRegisteredHackathons] = useState<Hackathon[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingTabs, setLoadingTabs] = useState<Record<string, boolean>>({});
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -130,9 +128,9 @@ const DanhSachHackathon = () => {
     try {
       const res = await hackathonService.getRegistered();
       if (res.success) {
-        const registered = res.data || [];
+        const registered = (res.data || []) as Hackathon[];
         setRegisteredHackathons(registered);
-        setRegisteredIds(new Set(registered.map((h: any) => h.id)));
+        setRegisteredIds(new Set(registered.map((h: Hackathon) => h.id)));
       }
     } catch (e) {
       console.error('Failed to fetch registered hackathons:', e);
@@ -148,15 +146,15 @@ const DanhSachHackathon = () => {
         hackathonService.getEnded(),
       ]);
 
-      if (activeRes.success) setActiveHackathons(activeRes.data || []);
-      if (upcomingRes.success) setUpcomingHackathons(upcomingRes.data || []);
-      if (endedRes.success) setEndedHackathons(endedRes.data || []);
+      if (activeRes.success) setActiveHackathons((activeRes.data || []) as Hackathon[]);
+      if (upcomingRes.success) setUpcomingHackathons((upcomingRes.data || []) as Hackathon[]);
+      if (endedRes.success) setEndedHackathons((endedRes.data || []) as Hackathon[]);
 
       // all = combine all
       const all = [
-        ...(activeRes.data || []),
-        ...(upcomingRes.data || []),
-        ...(endedRes.data || []),
+        ...((activeRes.data || []) as Hackathon[]),
+        ...((upcomingRes.data || []) as Hackathon[]),
+        ...((endedRes.data || []) as Hackathon[]),
       ];
       setAllHackathons(all);
     } catch (e) {
@@ -172,12 +170,8 @@ const DanhSachHackathon = () => {
   }, [fetchAll, fetchRegistered]);
 
   const loadTabData = async (tab: TabFilter) => {
-    if (tab === 'registered') {
-      if (!token) return;
-      setLoadingTabs(prev => ({ ...prev, registered: true }));
-      await fetchRegistered();
-      setLoadingTabs(prev => ({ ...prev, registered: false }));
-    }
+    if (tab === 'registered' && !token) return;
+    if (tab === 'registered') await fetchRegistered();
   };
 
   const handleTabChange = (tab: TabFilter) => {

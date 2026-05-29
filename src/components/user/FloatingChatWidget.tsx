@@ -83,7 +83,7 @@ export function FloatingChatWidget() {
     try {
       // Build conversation history for context
       const history = messages.map((m) => ({
-        role: m.role,
+        role: m.role as 'user' | 'model',
         parts: m.content,
       }));
 

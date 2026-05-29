@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 import { cn } from '@/lib/utils';
 import { API_ENDPOINTS } from '@/config/api';
-import { 
-  CheckCircle, XCircle, Eye, AlertCircle, 
-  BookOpen, User, FileText, Code, Lightbulb, Loader2,
-  ChevronDown, ChevronUp, Send
+import {
+  CheckCircle, XCircle, Eye, AlertCircle,
+  User, FileText, Code, Lightbulb, Loader2,
+  Send
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +16,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -59,7 +57,6 @@ interface LessonReview {
 }
 
 const LessonReviewPage = () => {
-  const navigate = useNavigate();
   const { theme } = useAppSelector((state) => state.theme);
   const isDark = theme === 'dark';
 
@@ -298,7 +295,7 @@ const LessonReviewPage = () => {
     );
   };
 
-  const parseJsonSafe = (jsonStr: string | null) => {
+  const parseJsonSafe = (jsonStr: string | null | undefined) => {
     if (!jsonStr) return [];
     try {
       return JSON.parse(jsonStr);

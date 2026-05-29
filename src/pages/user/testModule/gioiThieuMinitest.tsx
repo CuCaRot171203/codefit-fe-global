@@ -69,7 +69,6 @@ const GioiThieuMinitest = () => {
     navigate(`/user/minitest/lam-bai?minitestId=${minitestId}`);
   };
 
-  const questionCount = minitest?.questions?.length || 0;
   const displayTitle = minitest?.title || 'Bài kiểm tra năng lực';
   const displayCourse = minitest?.phase?.course?.title || 'Cấu trúc dữ liệu & Giải thuật';
 

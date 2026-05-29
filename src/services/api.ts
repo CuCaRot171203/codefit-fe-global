@@ -1,7 +1,5 @@
 import { API_ENDPOINTS } from '@/config/api';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
 interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
@@ -10,18 +8,14 @@ interface ApiResponse<T = unknown> {
 }
 
 class ApiClient {
-  private baseUrl: string;
+  constructor() {}
 
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
-
-  private getAuthHeaders(): HeadersInit {
+  private getAuthHeaders(): Record<string, string> {
     const token = localStorage.getItem('token');
     const isValidToken = token && token !== 'undefined' && token !== 'null' && token.length > 20;
     return {
       'Content-Type': 'application/json',
-      ...(isValidToken && { Authorization: `Bearer ${token}` }),
+      ...(isValidToken ? { Authorization: `Bearer ${token}` } : {}),
     };
   }
 
@@ -40,7 +34,7 @@ class ApiClient {
           statusCode: response.status,
         };
       }
-      return { ...data, statusCode: response.status };
+      return { success: data.success, message: data.message, data: data.data as T, statusCode: response.status };
     } catch (error: any) {
       return {
         success: false,
@@ -137,18 +131,19 @@ class ApiClient {
     if (folder) formData.append('folder', folder);
 
     const token = localStorage.getItem('token');
+    const isValidToken = token && token !== 'undefined' && token !== 'null' && token.length > 20;
+    const headers: Record<string, string> = {};
+    if (isValidToken) headers['Authorization'] = `Bearer ${token}`;
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
+      headers,
       body: formData,
     });
     return response.json();
   }
 }
 
-export const apiClient = new ApiClient(API_BASE_URL);
+export const apiClient = new ApiClient();
 
 // ============ AUTH SERVICE ============
 export const authService = {
@@ -271,7 +266,7 @@ export const minitestService = {
   getById: (id: string) => apiClient.get(API_ENDPOINTS.minitests.detail(id)),
 
   submit: (minitestId: string, answers: Record<string, string>) =>
-    apiClient.post(API_ENDPOINTS.minitests.submit, { minitestId, answers }),
+    apiClient.post(API_ENDPOINTS.minitests.submit(minitestId), { answers }),
 
   getResult: (id: string) => apiClient.get(API_ENDPOINTS.minitests.result(id)),
 };
@@ -294,11 +289,12 @@ export const uploadService = {
     if (folder) formData.append('folder', folder);
 
     const token = localStorage.getItem('token');
+    const isValidToken = token && token !== 'undefined' && token !== 'null' && token.length > 20;
+    const headers: Record<string, string> = {};
+    if (isValidToken) headers['Authorization'] = `Bearer ${token}`;
     return fetch(API_ENDPOINTS.upload.images, {
       method: 'POST',
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
+      headers,
       body: formData,
     }).then((res) => res.json());
   },

@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ScrollReveal from '../../components/shared/ScrollReveal';
+import { useState, useEffect } from 'react';
+import hero1 from '../../assets/images/heros/laptrinhvien1.jpg';
+import hero2 from '../../assets/images/heros/laptrinhvien2.jpg';
+import hero3 from '../../assets/images/heros/laptrinhvien3.png';
 
 const staggerContainer = {
   hidden: {},
@@ -13,22 +17,36 @@ const staggerContainer = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
 };
 
+const HERO_IMAGES = [hero1, hero2, hero3];
+
 const LandingPage = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <>
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-white dark:bg-slate-900">
         {/* Full-bleed background */}
         <div className="absolute inset-0 z-0">
-          <img
-            className="w-full h-full object-cover"
-            data-alt="high-quality close up photo of a professional software developer working in a minimalist modern office with soft cyan and orange neon rim lighting"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZZim0A1MH9Wie2QxVals9oHMq4jk0q5ihxe2iel0jkFoDpTcztsj-FsMXpX9gr_sPL92qv2XhNIHZ31J0U3CtEbDl2IM9PtY1r_D3omyF6P8L8holLQPDOrlEaW4gV1j382GDbocqAosfehlVYvLM4XoXqgI2X_BI6ko5JUtLbA_nsWq0DHU6CNlh34ZcLfn5fs9xSv4uxk9kx182NNK-Gs5ZQK78e1S38jTSnABcypHe_KuRwRtqV4_c4bo_6ZejnhbeG0NYsxA"
-            alt="Software Developer"
-          />
+          {HERO_IMAGES.map((src, i) => (
+            <img
+              key={src}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                i === currentIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+              src={src}
+              alt={`Hero ${i + 1}`}
+            />
+          ))}
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-slate-900 dark:via-slate-900/80 dark:to-transparent" />
         </div>
 
@@ -50,23 +68,22 @@ const LandingPage = () => {
                 variants={fadeUp}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-extrabold tracking-tighter text-slate-900 dark:text-white font-headline leading-[0.9] mb-6 sm:mb-8"
               >
-                Làm chủ Lập trình <br />
-                <span className="text-primary dark:text-cyan-400">Qua Thực tế</span>
+                Trải nghiệm <br />
+                <span className="text-primary dark:text-cyan-400">Khám phá</span> <br />
+                Khả năng lập trình
               </motion.h1>
               <motion.p
                 variants={fadeUp}
                 className="text-lg text-slate-600 dark:text-slate-400 max-w-md mb-10 leading-relaxed"
               >
-                Hệ thống luyện tập mã nguồn mở với phản hồi thời gian thực từ AI. Nâng
-                tầm kỹ năng lập trình của bạn thông qua các dự án thực tế và thách
-                thức toàn cầu.
+                Hãy tham gia lộ trình giả lập 21 ngày tại Codefit để trực tiếp viết mã và đo lường tư duy logic. Báo cáo phân tích từ hệ thống sẽ giúp bạn tự tin định hướng nghề nghiệp trước khi đầu tư lâu dài vào ngành IT.
               </motion.p>
               <motion.div
                 variants={fadeUp}
                 className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
               >
                 <Link to="/dang-nhap">
-                  <button className="w-full sm:w-auto bg-secondary text-white dark:bg-orange-600 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-headline font-bold text-base sm:text-lg hover:bg-secondary-container dark:hover:bg-orange-700 transition-all neon-glow-secondary">
+                  <button className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-headline font-bold text-base sm:text-lg transition-all shadow-lg">
                     Bắt đầu ngay
                   </button>
                 </Link>
@@ -86,9 +103,10 @@ const LandingPage = () => {
               <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 dark:bg-cyan-500/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 dark:bg-orange-500/10 rounded-full blur-3xl" />
               <img
-                className="relative z-10 w-full aspect-square object-cover rounded-xl shadow-2xl hover:scale-[1.03] transition-transform duration-700"
-                data-alt="high-quality close up photo of a professional software developer working in a minimalist modern office with soft cyan and orange neon rim lighting"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZZim0A1MH9Wie2QxVals9oHMq4jk0q5ihxe2iel0jkFoDpTcztsj-FsMXpX9gr_sPL92qv2XhNIHZ31J0U3CtEbDl2IM9PtY1r_D3omyF6P8L8holLQPDOrlEaW4gV1j382GDbocqAosfehlVYvLM4XoXqgI2X_BI6ko5JUtLbA_nsWq0DHU6CNlh34ZcLfn5fs9xSv4uxk9kx182NNK-Gs5ZQK78e1S38jTSnABcypHe_KuRwRtqV4_c4bo_6ZejnhbeG0NYsxA"
+                className={`relative z-10 w-full aspect-square object-cover rounded-xl shadow-2xl transition-all duration-1000 ${
+                  true ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                }`}
+                src={HERO_IMAGES[currentIndex]}
                 alt="Software Developer"
               />
               <div className="absolute -bottom-4 sm:-bottom-6 -right-4 sm:-right-6 glass-card dark:glass-card p-4 sm:p-6 rounded-xl border border-white/20 dark:border-slate-700/20 shadow-xl z-20 neon-glow-primary">
@@ -478,7 +496,7 @@ const LandingPage = () => {
               bạn ngay hôm nay.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-              <button className="w-full sm:w-auto bg-secondary dark:bg-orange-600 text-white px-10 py-5 rounded-xl font-headline font-bold text-xl hover:bg-secondary-container dark:hover:bg-orange-700 transition-all neon-glow-secondary shadow-lg">
+              <button className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-10 py-5 rounded-xl font-headline font-bold text-xl transition-all shadow-lg">
                 Bắt đầu miễn phí
               </button>
               <a

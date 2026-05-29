@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
 import {
@@ -8,39 +9,21 @@ import {
   BookOpen,
   GraduationCap,
   CreditCard,
-  FileText,
   Trophy,
   Clock,
   CheckCircle,
   XCircle,
-  Award,
-  TrendingUp,
   Play,
-  Filter,
-  Search,
 } from 'lucide-react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
 } from 'recharts';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { ConfirmModal } from '@/components/confirmModal';
-import { Table, Tag, Button, Select as AntSelect, Input, Modal } from 'antd';
+import { Table, Tag, Button, Select as AntSelect, Modal } from 'antd';
 
 interface DashboardStats {
   totalUsers: number;
@@ -656,11 +639,9 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2 sm:ml-auto">
               <Input
                 placeholder="Tìm kiếm giao dịch..."
-                prefix={<Search className="w-4 h-4 opacity-50" />}
                 value={paymentSearch}
-                onChange={(e) => setPaymentSearch(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPaymentSearch(e.target.value)}
                 className="w-52"
-                allowClear
               />
               <AntSelect
                 value={paymentFilter}
@@ -693,7 +674,6 @@ export default function AdminDashboard() {
               pageSizeOptions: ['5', '10', '20', '50'],
               showSizeChanger: true,
               showTotal: (total, range) => `${range[0]}–${range[1]} của ${total} giao dịch`,
-              locale: { prev_text: 'Trước', next_text: 'Sau', items_per_page: '/ trang' },
             }}
             columns={[
               {

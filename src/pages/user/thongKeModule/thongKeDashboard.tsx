@@ -94,7 +94,7 @@ const ThongKeDashboard = () => {
       setLoading(false);
       return;
     }
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     try {
       // Fetch user stats from existing endpoints

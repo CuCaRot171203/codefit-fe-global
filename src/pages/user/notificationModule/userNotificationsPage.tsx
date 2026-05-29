@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store';
-import { Bell, Check, CheckCheck, Trash2, Loader2, Mail, AlertCircle, Info } from 'lucide-react';
+import { Bell, Check, CheckCheck, Loader2, Mail, AlertCircle, Info } from 'lucide-react';
 import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface Notification {
   id: string;
@@ -17,7 +16,6 @@ interface Notification {
 }
 
 export default function UserNotificationsPage() {
-  const navigate = useNavigate();
   const { theme } = useAppSelector((state) => state.theme);
   const isDark = theme === 'dark';
 

@@ -18,11 +18,6 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
 
-  const clearInputs = () => {
-    setEmail('');
-    setPassword('');
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);

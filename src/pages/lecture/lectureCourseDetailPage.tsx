@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useLecture } from '@/contexts/LectureContext';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, BookOpen, Users, FileText, Video, Code, Loader2, Plus, Edit } from 'lucide-react';
@@ -58,7 +58,6 @@ interface Course {
 const LectureCourseDetailPage = () => {
   const { isDark } = useLecture();
   const { courseId } = useParams<{ courseId: string }>();
-  const navigate = useNavigate();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

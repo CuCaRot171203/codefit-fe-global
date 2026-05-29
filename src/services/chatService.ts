@@ -24,13 +24,11 @@ interface ChatResponse {
   suggestions?: string[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
-function getAuthHeaders(): HeadersInit {
+function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem('token');
   return {
     'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }
 
@@ -52,7 +50,7 @@ export async function sendChatMessage({
     }
 
     // Prepare conversation history for context
-    const historyParts = conversationHistory.slice(-10).map((msg) => ({
+    void conversationHistory.slice(-10).map((msg) => ({
       role: msg.role as 'user' | 'model',
       parts: msg.parts,
     }));

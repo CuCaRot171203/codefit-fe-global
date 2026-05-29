@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { toggleSidebar, clearUser } from '@/store/slices/adminSlice';
+import { clearUser } from '@/store/slices/adminSlice';
 import { toggleTheme } from '@/store/slices/themeSlice';
 import { LectureProvider } from '@/contexts/LectureContext';
 import { ConfigProvider, theme as antTheme } from 'antd';
@@ -18,17 +18,13 @@ import {
   Bell,
   Settings,
   User,
-  ChevronLeft,
-  Check,
   CheckCheck,
   Loader2,
-  BookOpen,
   FileText,
   RefreshCw,
 } from 'lucide-react';
 import LectureSidebar from '@/components/lecture/lectureSidebar';
 import { API_ENDPOINTS } from '@/config/api';
-import { message } from 'antd';
 
 interface Notification {
   id: string;
@@ -59,7 +55,6 @@ export default function LectureLayout() {
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [markingRead, setMarkingRead] = useState<string | null>(null);
   const [selectedNotifications, setSelectedNotifications] = useState<Set<string>>(new Set());
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
   // Sync theme with Redux
   useEffect(() => {
@@ -72,7 +67,7 @@ export default function LectureLayout() {
   }, [theme]);
 
   // Fetch notifications
-  const fetchNotifications = async (showToast = false) => {
+  const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(API_ENDPOINTS.notifications.list, {
@@ -99,7 +94,6 @@ export default function LectureLayout() {
           };
         });
         setNotifications(newNotifications);
-        setLastFetchTime(Date.now());
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -111,9 +105,9 @@ export default function LectureLayout() {
   // Poll for new notifications every 30 seconds
   useEffect(() => {
     if (user) {
-      fetchNotifications(false);
+      fetchNotifications();
       const interval = setInterval(() => {
-        fetchNotifications(true);
+        fetchNotifications();
       }, 30000);
       return () => clearInterval(interval);
     }
@@ -201,25 +195,10 @@ export default function LectureLayout() {
     }
   };
 
-  // Mark all as read
-  const markAllAsRead = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await fetch(API_ENDPOINTS.notifications.readAll, {
-        method: 'PUT',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error('Error marking all as read:', error);
-    }
-  };
-
   // Toggle notification dropdown
   const toggleNotificationDropdown = () => {
     if (!showNotifications) {
-      setLoadingNotifications(true);
-      fetchNotifications(false);
+      fetchNotifications();
     }
     setShowNotifications(!showNotifications);
   };
@@ -466,7 +445,7 @@ export default function LectureLayout() {
                         </button>
                       )}
                       <button
-                        onClick={() => fetchNotifications(true)}
+                        onClick={() => fetchNotifications()}
                         disabled={loadingNotifications}
                         className={cn(
                           'text-xs flex items-center gap-1 px-2 py-1 rounded-lg transition-colors',
@@ -676,6 +655,19 @@ export default function LectureLayout() {
                     </p>
                   </div>
                   <div className="py-1">
+                    <Link
+                      to="/lecture/dashboard"
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2 text-sm transition-colors',
+                        isDark
+                          ? 'text-slate-300 hover:bg-slate-700'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      )}
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Đến Dashboard
+                    </Link>
                     <Link
                       to="/lecture/profile"
                       className={cn(

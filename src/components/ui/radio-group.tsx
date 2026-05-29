@@ -7,13 +7,12 @@ export interface RadioGroupProps extends React.InputHTMLAttributes<HTMLDivElemen
 }
 
 const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
-  ({ className, value, onValueChange, onChange, ...props }, ref) => {
+  ({ className, onValueChange, onChange, ...props }, ref) => {
     return (
       <div
         ref={ref}
         role="radiogroup"
         className={cn("grid gap-2", className)}
-        value={value}
         onChange={onChange}
         {...props}
       />

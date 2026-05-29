@@ -19,7 +19,6 @@ const LectureProfileEditPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [userData, setUserData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -44,7 +43,6 @@ const LectureProfileEditPage = () => {
       
       if (userStr && userStr !== 'undefined') {
         const localUser = JSON.parse(userStr);
-        setUserData(localUser);
         setFormData({
           fullName: localUser.fullName || '',
           email: localUser.email || '',
@@ -66,7 +64,6 @@ const LectureProfileEditPage = () => {
             const data = await response.json();
             if (data.data) {
               const serverUser = data.data;
-              setUserData(serverUser);
               setFormData({
                 fullName: serverUser.fullName || '',
                 email: serverUser.email || '',
@@ -188,8 +185,6 @@ const LectureProfileEditPage = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        
         // Update localStorage
         const userStr = localStorage.getItem('user');
         if (userStr) {

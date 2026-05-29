@@ -11,8 +11,6 @@ import {
   Download,
   Send,
   FileArchive,
-  Image as ImageIcon,
-  Clock,
   BookOpen,
   ChevronRight,
   Loader2,

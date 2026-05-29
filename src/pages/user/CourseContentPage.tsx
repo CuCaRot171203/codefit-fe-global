@@ -14,7 +14,6 @@ import {
   Lock,
   ChevronDown,
   ChevronRight,
-  ChevronLeft,
   Loader2,
   ArrowLeft,
   Clock,
@@ -220,8 +219,9 @@ export default function CourseContentPage() {
 
     const unlockedIds = new Set<string>();
     
-    // If unlockLessonsCount = 0, all published lessons are unlocked
-    if (courseConfig.unlockLessonsCount === 0) {
+    // For free courses, all published lessons are unlocked
+    const isFreeCourse = course.subscriptionType === 'FREE' || course.price === 0;
+    if (isFreeCourse || courseConfig.unlockLessonsCount === 0) {
       course.phases.forEach((phase: Phase) => {
         phase.lessons?.forEach((lesson: Lesson) => {
           if (lesson.isPublished) {
@@ -546,7 +546,7 @@ export default function CourseContentPage() {
                       <CardTitle className="text-lg text-slate-900 dark:text-white">{phase.title}</CardTitle>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
                         {phase.lessons?.length || 0} bài học
-                        {phase._count?.minitests > 0 && ` • ${phase._count.minitests} bài test`}
+                        {phase._count?.minitests && phase._count.minitests > 0 && ` • ${phase._count.minitests} bài test`}
                       </p>
                     </div>
                   </div>
@@ -561,7 +561,7 @@ export default function CourseContentPage() {
               {expandedPhases.has(phase.id) && (
                 <CardContent className="p-0">
                   <div className="divide-y divide-slate-200 dark:divide-slate-800">
-                    {phase.lessons?.map((lesson: Lesson, lessonIndex: number) => {
+                    {phase.lessons?.map((lesson: Lesson) => {
                       const completed = isLessonCompleted(lesson.id);
                       const unlocked = isLessonUnlocked(lesson.id);
                       const locked = !unlocked || !lesson.isPublished;
@@ -602,7 +602,7 @@ export default function CourseContentPage() {
                               'font-medium truncate',
                               completed ? 'text-green-700 dark:text-green-400' : 'text-slate-900 dark:text-white'
                             )}>
-                              {lesson.orderIndex}. {lesson.title}
+                              {lesson.orderIndex + 1}. {lesson.title}
                             </h4>
                             <div className="flex items-center gap-3 mt-1">
                               <Badge variant="outline" className="text-xs">

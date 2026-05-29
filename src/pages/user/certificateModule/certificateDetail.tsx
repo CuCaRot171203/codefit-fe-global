@@ -50,7 +50,7 @@ const CertificateDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const [qrCodeUrlPdf, setQrCodeUrlPdf] = useState<string>('');
+  const [, setQrCodeUrlPdf] = useState<string>('');
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const certPreviewRef = useRef<HTMLDivElement>(null);

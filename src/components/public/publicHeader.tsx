@@ -1,13 +1,32 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import Logo from '@/assets/images/LOGO_CODEFIT.png';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const PublicHeader = () => {
   const { user, isAuthenticated } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Keep user/auth in sync when logout happens from another page/tab
+  const [authState, setAuthState] = useState({ user, isAuthenticated });
+  useEffect(() => {
+    setAuthState({ user, isAuthenticated });
+  }, [user, isAuthenticated]);
+
+  const getDashboardPath = () => {
+    if (!authState.user) return '/dang-nhap';
+    switch (authState.user.role) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'lecture':
+        return '/lecture/dashboard';
+      default:
+        return '/user/dashboard';
+    }
+  };
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `font-headline tracking-tight transition-all duration-300 ${
@@ -23,7 +42,7 @@ const PublicHeader = () => {
         : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
     }`;
 
-  const displayName = user?.username || 'User';
+  const displayName = authState.user?.username || 'User';
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
   return (
@@ -48,8 +67,11 @@ const PublicHeader = () => {
         </div>
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          {isAuthenticated && user ? (
-            <NavLink to="/user/profile" className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          {authState.isAuthenticated && authState.user ? (
+            <button
+              onClick={() => navigate(getDashboardPath())}
+              className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
               <Avatar className="w-9 h-9 cursor-pointer hover:ring-2 hover:ring-cyan-500/50 transition-all">
                 <AvatarFallback className="bg-cyan-500 text-white text-sm font-semibold">
                   {avatarInitial}
@@ -58,7 +80,7 @@ const PublicHeader = () => {
               <span className="text-sm font-medium text-slate-700 dark:text-slate-200 font-headline">
                 {displayName}
               </span>
-            </NavLink>
+            </button>
           ) : (
             <>
               <NavLink
@@ -120,11 +142,13 @@ const PublicHeader = () => {
             Bảng giá
           </NavLink>
           <div className="pt-3 border-t border-slate-200/50 dark:border-slate-700/50 mt-2 flex flex-col gap-2">
-            {isAuthenticated && user ? (
-              <NavLink
-                to="/user/profile"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            {authState.isAuthenticated && authState.user ? (
+              <button
+                onClick={() => {
+                  navigate(getDashboardPath());
+                  setMobileOpen(false);
+                }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-full"
               >
                 <Avatar className="w-9 h-9">
                   <AvatarFallback className="bg-cyan-500 text-white text-sm font-semibold">
@@ -134,7 +158,7 @@ const PublicHeader = () => {
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-200 font-headline">
                   {displayName}
                 </span>
-              </NavLink>
+              </button>
             ) : (
               <>
                 <NavLink

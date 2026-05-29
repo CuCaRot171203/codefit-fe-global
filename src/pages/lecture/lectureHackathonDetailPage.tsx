@@ -60,7 +60,6 @@ export default function LectureHackathonDetailPage() {
 
   const [hackathon, setHackathon] = useState<Hackathon | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     if (hackathonId) {
@@ -71,7 +70,7 @@ export default function LectureHackathonDetailPage() {
   const fetchHackathonDetail = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
       // Fetch hackathon detail
       const res = await fetch(API_ENDPOINTS.hackathons.detail(id), { headers });
@@ -118,9 +117,9 @@ export default function LectureHackathonDetailPage() {
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { bg: string; text: string; icon: any; label: string }> = {
-      upcoming: { bg: isDark ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-100 text-blue-700', text: 'Sắp diễn ra', icon: Clock },
-      ongoing: { bg: isDark ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-700', text: 'Đang diễn ra', icon: CheckCircle },
-      ended: { bg: isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-600', text: 'Đã kết thúc', icon: XCircle },
+      upcoming: { bg: isDark ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-100 text-blue-700', text: 'Sắp diễn ra', icon: Clock, label: 'Sắp diễn ra' },
+      ongoing: { bg: isDark ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-700', text: 'Đang diễn ra', icon: CheckCircle, label: 'Đang diễn ra' },
+      ended: { bg: isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-600', text: 'Đã kết thúc', icon: XCircle, label: 'Đã kết thúc' },
     };
     const c = config[status] || config.ended;
     return (
@@ -138,18 +137,8 @@ export default function LectureHackathonDetailPage() {
     return <span className={cn('px-2 py-0.5 rounded text-xs font-medium', isDark ? 'bg-yellow-900/50 text-yellow-400' : 'bg-yellow-100 text-yellow-700')}>Trung bình</span>;
   };
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-
+  
+  if (loading)
   if (loading) {
     return (
       <div className={cn("flex items-center justify-center min-h-[60vh]", isDark ? 'bg-slate-900' : 'bg-slate-50')}>

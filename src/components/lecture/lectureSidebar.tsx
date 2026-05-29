@@ -28,7 +28,7 @@ const LectureSidebar = () => {
   
   // Lấy trực tiếp từ Redux thay vì context
   const sidebarCollapsed = useAppSelector((state) => state.admin.sidebarCollapsed);
-  const isDark = useAppSelector((state) => state.theme) === 'dark';
+  const isDark = useAppSelector((state) => state.theme.theme) === 'dark';
 
   const handleToggleSidebar = () => {
     dispatch(toggleSidebar());

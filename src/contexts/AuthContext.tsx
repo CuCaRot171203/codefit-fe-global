@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (res.success && res.data) {
             const rawUser = res.data as Record<string, unknown>;
             const normalizedUser: User = {
-              ...(rawUser as User),
+              ...(rawUser as unknown as User),
               role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
             };
             setUser(normalizedUser);
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (res.success && res.data) {
         const rawUser = res.data as Record<string, unknown>;
         const normalizedUser: User = {
-          ...(rawUser as User),
+          ...(rawUser as unknown as User),
           role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
         };
         setUser(normalizedUser);

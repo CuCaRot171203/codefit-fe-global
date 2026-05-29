@@ -10,11 +10,9 @@ import {
   useDroppable,
 } from '@dnd-kit/core';
 import {
-  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { useAppSelector } from '@/store';
 import { cn } from '@/lib/utils';
 import { API_ENDPOINTS } from '@/config/api';
@@ -154,7 +152,7 @@ function SortableCard({ request }: { request: LessonRequest }) {
   } = useSortable({ id: request.id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
     transition,
   };
 
@@ -226,8 +224,6 @@ function Column({ column, requests }: { column: typeof STATUS_COLUMNS[0]; reques
 }
 
 export function KanbanBoard({ requests, onStatusChange, onRefresh }: KanbanBoardProps) {
-  const { theme } = useAppSelector((state) => state.theme);
-  const isDark = theme === 'dark';
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(

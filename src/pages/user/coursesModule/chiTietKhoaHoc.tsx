@@ -40,6 +40,7 @@ interface Course {
   students: number;
   price: number | null;
   originalPrice: number | null;
+  subscriptionType?: string;
   instructor: {
     name: string;
     role: string;
@@ -234,6 +235,7 @@ const ChiTietKhoaHoc = () => {
             students: data.students || 0,
             price: data.price,
             originalPrice: data.originalPrice,
+            subscriptionType: data.subscriptionType || 'PREMIUM',
             instructor: {
               name: data.instructor?.name || data.instructorName || 'Giảng viên',
               role: data.instructor?.role || data.instructorRole || 'Giảng viên CodeFit',
@@ -281,6 +283,36 @@ const ChiTietKhoaHoc = () => {
       navigate(`/user/courses/${id}/content`);
     } else {
       navigate(`/user/payment/qr/${id}`);
+    }
+  };
+
+  const isFreeCourse = course?.subscriptionType === 'FREE' || course?.price === 0;
+
+  const handleFreeEnroll = async () => {
+    if (!id) return;
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      if (token && token !== 'undefined' && token !== 'null' && token.length > 20) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      const res = await fetch('/api/enrollments', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ courseId: id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsEnrolled(true);
+        navigate(`/user/courses/${id}/content`);
+      }
+    } catch (err) {
+      console.error('Free enroll error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -496,26 +528,47 @@ const ChiTietKhoaHoc = () => {
 
                 {/* CTA Buttons */}
                 <div className="space-y-4">
-                  <Button
-                    onClick={handleCheckout}
-                    className="w-full bg-orange-400 hover:bg-orange-500 text-white py-6 text-lg font-bold shadow-lg shadow-orange-400/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                  >
-                    {isEnrolled ? 'Tiếp tục học' : 'Đăng ký thanh toán'}
-                  </Button>
-                  {!isEnrolled && (
+                  {isFreeCourse ? (
                     <Button
-                      variant="outline"
-                      onClick={() => setShowUnlockCodeModal(true)}
-                      className="w-full gap-2 dark:border-slate-600 dark:hover:bg-slate-700"
+                      onClick={isEnrolled
+                        ? () => navigate(`/user/courses/${id}/content`)
+                        : handleFreeEnroll
+                      }
+                      disabled={isLoading}
+                      className="w-full bg-orange-400 hover:bg-orange-500 text-white py-6 text-lg font-bold shadow-lg shadow-orange-400/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                      <KeyRound className="w-4 h-4" />
-                      Nhập mã mở khóa
+                      {isLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : isEnrolled ? (
+                        'Tiếp tục học'
+                      ) : (
+                        'Đăng ký khóa học'
+                      )}
                     </Button>
-                  )}
-                  {!isEnrolled && (
-                    <p className="text-center text-xs text-slate-400 dark:text-slate-500">
-                      Hoàn tiền trong 7 ngày nếu không hài lòng
-                    </p>
+                  ) : (
+                    <>
+                      <Button
+                        onClick={handleCheckout}
+                        className="w-full bg-orange-400 hover:bg-orange-500 text-white py-6 text-lg font-bold shadow-lg shadow-orange-400/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                      >
+                        {isEnrolled ? 'Tiếp tục học' : 'Đăng ký thanh toán'}
+                      </Button>
+                      {!isEnrolled && (
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowUnlockCodeModal(true)}
+                          className="w-full gap-2 dark:border-slate-600 dark:hover:bg-slate-700"
+                        >
+                          <KeyRound className="w-4 h-4" />
+                          Nhập mã mở khóa
+                        </Button>
+                      )}
+                      {!isEnrolled && (
+                        <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+                          Hoàn tiền trong 7 ngày nếu không hài lòng
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 

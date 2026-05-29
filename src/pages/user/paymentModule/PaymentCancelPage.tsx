@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { XCircle, ArrowLeft } from 'lucide-react';
-import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
 
 export default function PaymentCancelPage() {
@@ -11,7 +10,6 @@ export default function PaymentCancelPage() {
   const [searchParams] = useSearchParams();
   const [isDark, setIsDark] = useState(false);
 
-  const paymentId = searchParams.get('paymentId') || '';
   const courseId = searchParams.get('courseId') || '';
 
   useEffect(() => {

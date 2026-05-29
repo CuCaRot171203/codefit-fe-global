@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useRef, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useCallback, useRef, type ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export type HttpStatus = 400 | 401 | 403 | 404 | 409 | 422 | 500 | 502 | 503;

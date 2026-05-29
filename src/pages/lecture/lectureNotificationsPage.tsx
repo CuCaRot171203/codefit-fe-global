@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 import {
   Bell, Check, CheckCheck, Loader2, Mail, AlertCircle, Info,
-  CheckCircle, XCircle, BookOpen, ArrowRight, Eye, FileText,
-  Code, MessageSquare, Clock, User, ChevronRight
+  CheckCircle, XCircle, BookOpen, ArrowRight, FileText,
+  Code, MessageSquare, Clock
 } from 'lucide-react';
 import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -214,22 +214,6 @@ export default function LectureNotificationsPage() {
     // For other notifications, show simple detail modal
     setSelectedNotification(notification);
     setShowDetailModal(true);
-  };
-
-  // Navigate to lesson editor
-  const handleGoToLesson = () => {
-    if (selectedNotification) {
-      const metadata = typeof selectedNotification.metadata === 'string'
-        ? JSON.parse(selectedNotification.metadata)
-        : selectedNotification.metadata;
-
-      if (metadata?.actionUrl) {
-        navigate(metadata.actionUrl);
-      } else if (metadata?.lessonId) {
-        navigate(`/lecture/lessons/${metadata.lessonId}/edit`);
-      }
-      setShowDetailModal(false);
-    }
   };
 
   const formatDate = (dateString: string) => {

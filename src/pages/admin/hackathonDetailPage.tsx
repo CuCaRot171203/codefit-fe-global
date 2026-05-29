@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
-import { Modal, message } from 'antd';
-import { Trophy, ArrowLeft, Loader2, Calendar, Clock, Users, Image, Play, Edit, Layers, Code, FileText, CheckCircle, Eye, TrendingUp, Award, Target, BarChart3, PieChart } from 'lucide-react';
+import { Modal } from 'antd';
+import { Trophy, ArrowLeft, Loader2, Calendar, Clock, Users, Image, Play, Edit, Layers, FileText, Eye, TrendingUp, Award, Target, BarChart3, PieChart, Code } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartPie, Pie, Cell, LineChart, Line } from 'recharts';
 
 interface Testcase {
@@ -25,6 +25,8 @@ interface Problem {
   inputFormat?: string;
   outputFormat?: string;
   testcases?: Testcase[];
+  submissionCount?: number;
+  score?: number;
 }
 
 interface Lesson {
@@ -93,9 +95,9 @@ export default function HackathonDetailPage() {
         setHackathon(data.data);
         
         // Fetch lesson details if there are lessonIds
-        const lessonIds = parseLessonIds(data.data.lessonIds);
+        const lessonIds = parseLessonIds(data.data.lessonIds || '');
         if (lessonIds.length > 0) {
-          fetchLessonDetails(lessonIds, token);
+          fetchLessonDetails(lessonIds, token || '');
         }
       }
     } catch (error) {
@@ -565,7 +567,7 @@ export default function HackathonDetailPage() {
                                   </span>
                                 </td>
                                 <td className={cn("py-3 px-4 text-center", isDark ? 'text-slate-300' : 'text-slate-600')}>{p.submissionCount}</td>
-                                <td className={cn("py-3 px-4 text-center font-medium", isDark ? 'text-green-400' : 'text-green-600')}>{p.score}</td>
+                                <td className={cn("py-3 px-4 text-center font-medium", isDark ? 'text-green-400' : 'text-green-600')}>{p.avgScore}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -745,7 +747,7 @@ export default function HackathonDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {lessons.map((lesson, index) => (
+                    {lessons.map((lesson) => (
                       <div
                         key={lesson.id}
                         className={cn(
@@ -982,7 +984,7 @@ export default function HackathonDetailPage() {
         width={800}
         styles={{
           mask: { backgroundColor: isDark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.45)' },
-          content: { backgroundColor: isDark ? '#1e293b' : '#fff' },
+          body: { backgroundColor: isDark ? '#1e293b' : '#fff' },
         }}
       >
         {previewLesson && (

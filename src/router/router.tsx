@@ -68,6 +68,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/dashboardPage'));
 const AdminCoursesPage = lazy(() => import('@/pages/admin/coursesPage'));
 const AdminCourseEditPage = lazy(() => import('@/pages/admin/courseEditPage'));
 const AdminContentEditorPage = lazy(() => import('@/pages/admin/contentEditorPage'));
+const AdminLessonEditorPage = lazy(() => import('@/pages/admin/adminLessonEditorPage'));
 const MinitestSettingsPage = lazy(() => import('@/pages/admin/minitestSettingsPage'));
 const FinalTestSettingsPage = lazy(() => import('@/pages/admin/FinalTestSettingsPage'));
 const FinalProjectSettingsPage = lazy(() => import('@/pages/admin/FinalProjectSettingsPage'));
@@ -114,7 +115,7 @@ const Error500 = lazy(() => import('@/pages/public/error/Error500'));
  * Error boundary component for root route
  */
 function RootErrorBoundary() {
-  const error = useRouteError();
+  useRouteError();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -256,6 +257,7 @@ export const router = createBrowserRouter(
         <Route path="admin/courses/:id/minitests" element={<Suspense fallback={pageFallback}><MinitestSettingsPage /></Suspense>} />
         <Route path="admin/courses/:id/final-test/:hackathonId" element={<Suspense fallback={pageFallback}><FinalTestSettingsPage /></Suspense>} />
         <Route path="admin/courses/:id/final-project/:projectId" element={<Suspense fallback={pageFallback}><FinalProjectSettingsPage /></Suspense>} />
+        <Route path="admin/courses/:courseId/lessons/:lessonId/edit" element={<Suspense fallback={pageFallback}><AdminLessonEditorPage /></Suspense>} />
         <Route path="admin/instructors" element={<Suspense fallback={pageFallback}><AdminInstructorsPage /></Suspense>} />
         <Route path="admin/instructors/:lectureId" element={<Suspense fallback={pageFallback}><InstructorDetailPage /></Suspense>} />
         <Route path="admin/users" element={<Suspense fallback={pageFallback}><AdminUsersPage /></Suspense>} />

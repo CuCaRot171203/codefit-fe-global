@@ -9,7 +9,7 @@ import {
   Loader2, Play, Bold, Italic, Underline, List, ListOrdered,
   Heading1, Heading2, Quote, Copy, Check, ChevronDown,
   Languages, ArrowRightLeft, Eye, CheckCircle, XCircle,
-  AlertTriangle, Terminal, ChevronRight, Clock, Zap, Sparkles
+  AlertTriangle, Terminal, Clock, Zap, Sparkles
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import type { OnMount } from '@monaco-editor/react';
@@ -158,14 +158,14 @@ const LectureLessonEditorPage = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('content');
   const [copiedCode, setCopiedCode] = useState(false);
-  const [testCaseMenuOpen, setTestCaseMenuOpen] = useState<number | null>(null);
+  const [_testCaseMenuOpen, _setTestCaseMenuOpen] = useState<number | null>(null);
 
   // Split View States
   const [showSplitView, setShowSplitView] = useState(false);
   const [runningCode, setRunningCode] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
-  const [codeOutput, setCodeOutput] = useState('');
-  const [selectedTestCase, setSelectedTestCase] = useState<number | null>(null);
+  const [_codeOutput, _setCodeOutput] = useState('');
+  const [_selectedTestCase, _setSelectedTestCase] = useState<number | null>(null);
 
   // AI Generate Hints States
   const [generatingHints, setGeneratingHints] = useState(false);
@@ -450,7 +450,7 @@ const LectureLessonEditorPage = () => {
       if (result.success && result.data) {
         setGeneratedHints(result.data);
         // Select all by default
-        const allIndices = new Set(result.data.map((_: any, i: number) => i));
+        const allIndices = new Set<number>(result.data.map((_: any, i: number) => i));
         setSelectedGeneratedHints(allIndices);
       } else {
         message.error(result.message || 'Không thể tạo gợi ý');
@@ -625,8 +625,8 @@ const LectureLessonEditorPage = () => {
 
     setRunningCode(true);
     setTestResults([]);
-    setCodeOutput('');
-    setSelectedTestCase(testIndex ?? null);
+    _setCodeOutput('');
+    _setSelectedTestCase(testIndex ?? null);
 
     try {
       // Simulate code execution (in production, this would call a judge API)
@@ -653,7 +653,7 @@ const LectureLessonEditorPage = () => {
           if (result.data?.results) {
             setTestResults(result.data.results);
           } else if (result.data?.output) {
-            setCodeOutput(result.data.output);
+            _setCodeOutput(result.data.output);
           }
           message.success('Chạy code thành công!');
         } else {
@@ -682,7 +682,7 @@ const LectureLessonEditorPage = () => {
       ? [testCases[testIndex]]
       : testCases;
 
-    testCasesToRun.forEach((tc, idx) => {
+    testCasesToRun.forEach((tc) => {
       // Simulate execution - in real app, this would be server-side
       const passed = Math.random() > 0.3; // Demo: 70% pass rate
       results.push({

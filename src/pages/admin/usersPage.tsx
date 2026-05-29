@@ -18,7 +18,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Table } from 'antd';
-import type { TableProps } from 'antd';
 
 interface User {
   id: string;
@@ -129,7 +128,10 @@ export default function AdminUsersPage() {
           colorClasses[roleName] || colorClasses.default
         )}
       >
-        {iconClass && <iconClass className="w-3 h-3" />}
+        {iconClass && (() => {
+          const Icon = iconClass;
+          return <Icon className="w-3 h-3" />;
+        })()}
         {roleData.label}
       </span>
     );

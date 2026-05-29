@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import type { RootState } from '@/store';
 import {
   Mail,
-  GraduationCap,
   Award,
   Edit,
   Star,
@@ -69,12 +68,8 @@ const LectureProfilePage = () => {
     }
   };
 
-  const handleOnboardingComplete = () => {
-    fetchUserData();
-  };
-
   const displayName = userData?.fullName || userData?.username || 'Giảng viên';
-  const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const initials = displayName.split(' ').map((n: string) => n[0] || '').join('').toUpperCase().slice(0, 2);
   
   const email = userData?.email;
   const bio = userData?.bio;

@@ -75,7 +75,7 @@ const ProfileEditPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [userData, setUserData] = useState<any>(null);
+  const [_userData, setUserData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -289,7 +289,7 @@ const ProfileEditPage = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         
         // Update localStorage
         const userStr = localStorage.getItem('user');

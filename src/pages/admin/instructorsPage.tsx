@@ -17,7 +17,6 @@ import {
   Users,
   Loader2,
   Plus,
-  X,
 } from 'lucide-react';
 
 interface Instructor {
@@ -46,7 +45,7 @@ export default function AdminInstructorsPage() {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [, setShowAddModal] = useState(false);
 
   useEffect(() => {
     fetchInstructors();

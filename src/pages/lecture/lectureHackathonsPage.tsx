@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLecture } from '@/contexts/LectureContext';
 import { cn } from '@/lib/utils';
 import { Trophy, ChevronRight, Loader2, Users, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_ENDPOINTS } from '@/config/api';
 
 interface Hackathon {
@@ -20,7 +19,6 @@ interface Hackathon {
 }
 
 const LectureHackathonsPage = () => {
-  const navigate = useNavigate();
   const { isDark } = useLecture();
   const [hackathons, setHackathons] = useState<Hackathon[]>([]);
   const [loading, setLoading] = useState(true);

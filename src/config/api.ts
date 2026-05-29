@@ -91,6 +91,8 @@ export const API_ENDPOINTS = {
     lessonRequests: `${API_BASE_URL}/api/admin/lesson-requests`,
     approveLessonRequest: (id: string) => `${API_BASE_URL}/api/admin/lesson-requests/${id}/approve`,
     rejectLessonRequest: (id: string) => `${API_BASE_URL}/api/admin/lesson-requests/${id}/reject`,
+    publishLesson: (id: string) => `${API_BASE_URL}/api/lesson-reviews/${id}/publish`,
+    approveLesson: (id: string) => `${API_BASE_URL}/api/lesson-reviews/${id}/approve`,
   },
 
   // Lesson Progress
@@ -293,6 +295,7 @@ export const API_ENDPOINTS = {
     scoreBreakdown: `${API_BASE_URL}/api/stats/score-breakdown`,
     loginDays: `${API_BASE_URL}/api/stats/login-days`,
     weeklyActivity: `${API_BASE_URL}/api/stats/weekly-activity`,
+    activity30Days: `${API_BASE_URL}/api/stats/activity-30-days`,
     globalRank: `${API_BASE_URL}/api/stats/global-rank`,
     evaluation: `${API_BASE_URL}/api/stats/evaluation`,
     enrolledCourses: `${API_BASE_URL}/api/stats/enrolled-courses`,

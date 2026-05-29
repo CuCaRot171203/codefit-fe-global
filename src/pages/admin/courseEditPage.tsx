@@ -1,15 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAdmin } from '@/contexts/AdminContext';
 import { useAppSelector } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { API_ENDPOINTS } from '@/config/api';
@@ -39,7 +36,8 @@ import {
   Edit,
 } from 'lucide-react';
 import { UnlockCodePanel } from '@/components/admin/UnlockCodePanel';
-import { message, notification } from 'antd';
+import { message, notification, Modal, DatePicker, ConfigProvider, theme as antTheme } from 'antd';
+import dayjs from 'dayjs';
 
 // Convert image file to WebP format
 const convertToWebP = (file: File): Promise<Blob> => {
@@ -142,17 +140,6 @@ interface Lesson {
   };
 }
 
-interface LessonContent {
-  id: string;
-  lessonId: string;
-  content: string;
-  testCases: string;
-  hints: string;
-  starterCode: string;
-  timeLimit: number | null;
-  memoryLimit: number | null;
-}
-
 interface Course {
   id: string;
   title: string;
@@ -168,6 +155,8 @@ interface Course {
   // Progressive unlock config
   unlockLessonsCount?: number;
   unlockByPhase?: boolean;
+  features?: string;
+  includes?: string;
   creator?: { id: string; fullName: string; email: string };
   phases: Phase[];
   hackathons?: Hackathon[];
@@ -217,13 +206,14 @@ export default function CourseEditPage() {
     image: '',
     duration: '',
     level: 'beginner',
-    subscriptionType: 'FREE',
+    subscriptionType: 'PREMIUM',
     subscriptionPrice: 0,
     autoEnrollOnApproval: true,
     unlockLessonsCount: 3,
     unlockByPhase: false,
     features: '',
     includes: '',
+    isFreeCourse: false,
   });
 
   const [featuresList, setFeaturesList] = useState([
@@ -249,7 +239,16 @@ export default function CourseEditPage() {
   // Lesson detail dialog
   const [lessonDetailOpen, setLessonDetailOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [lessonLoading, setLessonLoading] = useState(false);
+  const [lessonLoading, _setLessonLoading] = useState(false);
+
+  // Lesson edit request dialog
+  const [lessonEditRequestOpen, setLessonEditRequestOpen] = useState(false);
+  const [editRequestLessonId, setEditRequestLessonId] = useState('');
+  const [editRequestLessonTitle, setEditRequestLessonTitle] = useState('');
+  const [editRequestLectureId, setEditRequestLectureId] = useState('');
+  const [editRequestNotes, setEditRequestNotes] = useState('');
+  const [editRequestDueDate, setEditRequestDueDate] = useState<dayjs.Dayjs | null>(null);
+  const [savingEditRequest, setSavingEditRequest] = useState(false);
 
   // Unlock code dialog
   const [unlockCodeOpen, setUnlockCodeOpen] = useState(false);
@@ -264,9 +263,18 @@ export default function CourseEditPage() {
     endTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
   });
 
+  // Auto-determine subscriptionType based on isFreeCourse or price
+  useEffect(() => {
+    if (formData.isFreeCourse || formData.price === 0) {
+      setFormData(prev => ({ ...prev, subscriptionType: 'FREE' }));
+    } else {
+      setFormData(prev => ({ ...prev, subscriptionType: 'PREMIUM' }));
+    }
+  }, [formData.isFreeCourse, formData.price]);
+
   // Problem dialog for Final Test
   const [problemDialogOpen, setProblemDialogOpen] = useState(false);
-  const [editingProblem, setEditingProblem] = useState<Problem | null>(null);
+  const [editingProblem] = useState<Problem | null>(null);
   const [problemData, setProblemData] = useState({
     title: '',
     description: '',
@@ -284,8 +292,8 @@ export default function CourseEditPage() {
 
   // Project detail dialog (view submissions)
   const [projectDetailOpen, setProjectDetailOpen] = useState(false);
-  const [projectSubmissions, setProjectSubmissions] = useState<ProjectSubmission[]>([]);
-  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [projectSubmissions] = useState<ProjectSubmission[]>([]);
+  const [loadingSubmissions] = useState(false);
 
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const lessonContentRef = useRef<HTMLTextAreaElement>(null);
@@ -333,15 +341,6 @@ export default function CourseEditPage() {
     }
   }, []);
 
-  const isValidUrl = (string: string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const fetchCourse = async (courseId: string) => {
     try {
       const token = localStorage.getItem('token');
@@ -364,6 +363,9 @@ export default function CourseEditPage() {
           autoEnrollOnApproval: data.data.autoEnrollOnApproval !== false,
           unlockLessonsCount: data.data.unlockLessonsCount ?? 3,
           unlockByPhase: data.data.unlockByPhase ?? false,
+          features: data.data.features || '',
+          includes: data.data.includes || '',
+          isFreeCourse: data.data.subscriptionType === 'FREE',
         });
 
         // Load features and includes
@@ -533,9 +535,7 @@ export default function CourseEditPage() {
       newErrors.originalPrice = 'Giá gốc không được âm';
     }
 
-    if (formData.subscriptionType !== 'FREE' && formData.subscriptionPrice <= 0) {
-      newErrors.subscriptionPrice = 'Giá subscription phải lớn hơn 0';
-    }
+    // subscriptionType is auto-determined, no manual validation needed
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -894,31 +894,6 @@ export default function CourseEditPage() {
     }
   };
 
-  // Handle open add/edit problem
-  const handleOpenProblemDialog = (hackathonId: string, problem?: Problem) => {
-    setEditingHackathon(hackathons.find(h => h.id === hackathonId) || null);
-    if (problem) {
-      setEditingProblem(problem);
-      setProblemData({
-        title: problem.title,
-        description: problem.description,
-        difficulty: problem.difficulty,
-        testcases: problem.testcases?.length
-          ? problem.testcases.map(tc => ({ input: tc.input, expectedOutput: tc.expectedOutput, isPublic: tc.isPublic }))
-          : [{ input: '', expectedOutput: '', isPublic: true }],
-      });
-    } else {
-      setEditingProblem(null);
-      setProblemData({
-        title: '',
-        description: '',
-        difficulty: 'EASY',
-        testcases: [{ input: '', expectedOutput: '', isPublic: true }],
-      });
-    }
-    setProblemDialogOpen(true);
-  };
-
   // Handle add testcase
   const handleAddTestcase = () => {
     setProblemData({
@@ -979,51 +954,6 @@ export default function CourseEditPage() {
     }
   };
 
-  // Handle delete problem
-  const handleDeleteProblem = async (problemId: string) => {
-    if (!editingHackathon) return;
-    try {
-      const token = localStorage.getItem('token');
-      await fetch(`${API_ENDPOINTS.admin.problem(problemId)}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      // Refresh hackathon data
-      const hackathonRes = await fetch(`${API_ENDPOINTS.admin.hackathon(editingHackathon.id)}`);
-      const hackathonData = await hackathonRes.json();
-      if (hackathonData.success) {
-        setHackathons(hackathons.map(h =>
-          h.id === editingHackathon!.id ? hackathonData.data : h
-        ));
-      }
-      message.success('Đã xóa bài tập');
-    } catch (error) {
-      console.error('Error deleting problem:', error);
-      message.error('Xóa bài tập thất bại');
-    }
-  };
-
-  // Handle view project submissions
-  const handleViewProjectSubmissions = async (projectId: string) => {
-    setLoadingSubmissions(true);
-    setProjectDetailOpen(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_ENDPOINTS.admin.project(projectId)}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      const data = await response.json();
-      if (data.success) {
-        setProjectSubmissions(data.data.submissions || []);
-        setEditingProject(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching project:', error);
-    } finally {
-      setLoadingSubmissions(false);
-    }
-  };
-
   // Handle update project
   const handleUpdateProject = async () => {
     if (!editingProject) return;
@@ -1069,6 +999,121 @@ export default function CourseEditPage() {
   const handleViewLesson = async (lesson: Lesson) => {
     setSelectedLesson(lesson);
     setLessonDetailOpen(true);
+  };
+
+  // Open lesson edit request dialog
+  const handleOpenLessonEditRequest = async (lesson: Lesson) => {
+    setEditRequestLessonId(lesson.id);
+    setEditRequestLessonTitle(lesson.title);
+    setEditRequestLectureId('');
+    setEditRequestNotes('');
+    setEditRequestDueDate(null);
+    setLessonEditRequestOpen(true);
+    // Fetch lectures list if not already loaded
+    if (lectures.length === 0) {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_ENDPOINTS.admin.users}?role=lecture`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          setLectures(data.data);
+        }
+      } catch {
+        // ignore
+      }
+    }
+  };
+
+  // Submit lesson edit request
+  const handleSubmitLessonEditRequest = async () => {
+    if (!editRequestLectureId) {
+      message.warning('Vui lòng chọn giảng viên');
+      return;
+    }
+    if (!editRequestLessonId) {
+      message.warning('Không tìm thấy bài học');
+      return;
+    }
+    setSavingEditRequest(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(API_ENDPOINTS.lessonRequests.create, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          lectureId: editRequestLectureId,
+          lessonId: editRequestLessonId,
+          dueDate: editRequestDueDate ? editRequestDueDate.toISOString() : undefined,
+          notes: editRequestNotes || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        message.success('Đã tạo yêu cầu sửa bài học');
+        setLessonEditRequestOpen(false);
+      } else {
+        message.error(data.message || 'Tạo yêu cầu thất bại');
+      }
+    } catch {
+      message.error('Tạo yêu cầu thất bại');
+    } finally {
+      setSavingEditRequest(false);
+    }
+  };
+
+  // Navigate to lesson editor (admin direct edit)
+  const handleEditLesson = (lessonId: string) => {
+    navigate(`/admin/courses/${id}/lessons/${lessonId}/edit`);
+  };
+
+  // Wrap delete handlers with Modal.confirm
+  const confirmDeletePhase = (phaseId: string) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa chương',
+      content: 'Bạn có chắc chắn muốn xóa chương này? Toàn bộ bài học trong chương sẽ bị xóa.',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: () => handleDeletePhase(phaseId),
+    });
+  };
+
+  const confirmDeleteLesson = (phaseId: string, lessonId: string) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa bài học',
+      content: 'Bạn có chắc chắn muốn xóa bài học này?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: () => handleDeleteLesson(phaseId, lessonId),
+    });
+  };
+
+  const confirmDeleteFinalTest = (hackathonId: string) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa Final Test',
+      content: 'Bạn có chắc chắn muốn xóa Final Test này?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: () => handleDeleteFinalTest(hackathonId),
+    });
+  };
+
+  const confirmDeleteFinalProject = (projectId: string) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa Final Project',
+      content: 'Bạn có chắc chắn muốn xóa Final Project này?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: () => handleDeleteFinalProject(projectId),
+    });
   };
 
   const togglePhase = (phaseId: string) => {
@@ -1222,6 +1267,7 @@ export default function CourseEditPage() {
                     id="originalPrice"
                     type="number"
                     min="0"
+                    disabled={formData.isFreeCourse}
                     value={formData.originalPrice}
                     onChange={(e) => {
                       const val = Number(e.target.value);
@@ -1244,6 +1290,7 @@ export default function CourseEditPage() {
                     id="price"
                     type="number"
                     min="0"
+                    disabled={formData.isFreeCourse}
                     value={formData.price}
                     onChange={(e) => {
                       const val = Number(e.target.value);
@@ -1294,71 +1341,53 @@ export default function CourseEditPage() {
             </CardContent>
           </Card>
 
-          {/* Subscription Settings */}
+          {/* Free Course Toggle */}
           <Card className={isDark ? "bg-slate-900 border-slate-800" : ""}>
             <CardHeader>
-              <CardTitle className={isDark ? "text-white" : ""}>Cài đặt Subscription</CardTitle>
+              <CardTitle className={isDark ? "text-white" : ""}>Loại khóa học</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between p-4 rounded-lg border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20">
+                <div>
+                  <Label
+                    htmlFor="isFreeCourse"
+                    className={cn(
+                      "cursor-pointer font-bold text-base",
+                      isDark ? "text-orange-300" : "text-orange-700"
+                    )}
+                  >
+                    KHÓA HỌC MIỄN PHÍ
+                  </Label>
+                  <p className={cn(
+                    "text-xs mt-1",
+                    isDark ? "text-orange-400/70" : "text-orange-600"
+                  )}>
+                    Tích chọn để khóa học miễn phí. Giá gốc và giá bán sẽ là 0, subscription sẽ bị vô hiệu hóa.
+                  </p>
+                </div>
+                <Switch
+                  id="isFreeCourse"
+                  checked={formData.isFreeCourse}
+                  onCheckedChange={(checked) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      isFreeCourse: checked,
+                      price: checked ? 0 : (prev.price || 0),
+                      originalPrice: checked ? 0 : (prev.originalPrice || 0),
+                      subscriptionPrice: checked ? 0 : (prev.subscriptionPrice || 0),
+                    }));
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Course Settings */}
+          <Card className={isDark ? "bg-slate-900 border-slate-800" : ""}>
+            <CardHeader>
+              <CardTitle className={isDark ? "text-white" : ""}>Cài đặt khóa học</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <Label className={isDark ? "text-slate-300" : ""}>Loại Subscription</Label>
-                <RadioGroup
-                  value={formData.subscriptionType}
-                  onValueChange={(v) => setFormData({ ...formData, subscriptionType: v })}
-                  className="flex flex-wrap gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="FREE" id="free" className={isDark ? "border-slate-600" : ""} />
-                    <Label htmlFor="free" className={cn(
-                      "cursor-pointer font-normal",
-                      isDark ? "text-slate-300" : ""
-                    )}>Miễn phí</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="PREMIUM" id="premium" className={isDark ? "border-slate-600" : ""} />
-                    <Label htmlFor="premium" className={cn(
-                      "cursor-pointer font-normal",
-                      isDark ? "text-slate-300" : ""
-                    )}>Premium</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="BOTH" id="both" className={isDark ? "border-slate-600" : ""} />
-                    <Label htmlFor="both" className={cn(
-                      "cursor-pointer font-normal",
-                      isDark ? "text-slate-300" : ""
-                    )}>Cả hai</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {(formData.subscriptionType === 'PREMIUM' || formData.subscriptionType === 'BOTH') && (
-                <div className="space-y-2">
-                  <Label htmlFor="subscriptionPrice" className={isDark ? "text-slate-300" : ""}>
-                    Giá Subscription (VNĐ)
-                  </Label>
-                  <Input
-                    id="subscriptionPrice"
-                    type="number"
-                    min="0"
-                    value={formData.subscriptionPrice}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      if (val >= 0) {
-                        setFormData({ ...formData, subscriptionPrice: val });
-                        if (errors.subscriptionPrice) setErrors({ ...errors, subscriptionPrice: '' });
-                      }
-                    }}
-                    placeholder="VD: 299000"
-                    className={cn(
-                      isDark && "bg-slate-800 border-slate-700 text-white"
-                    )}
-                  />
-                  {errors.subscriptionPrice && (
-                    <p className="text-sm text-red-500">{errors.subscriptionPrice}</p>
-                  )}
-                </div>
-              )}
-
               <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700">
                 <Label htmlFor="autoEnroll" className={cn(
                   "cursor-pointer",
@@ -1369,6 +1398,7 @@ export default function CourseEditPage() {
                 <Switch
                   id="autoEnroll"
                   checked={formData.autoEnrollOnApproval}
+                  disabled={formData.isFreeCourse}
                   onCheckedChange={(checked) => setFormData({ ...formData, autoEnrollOnApproval: checked })}
                 />
               </div>
@@ -1403,6 +1433,7 @@ export default function CourseEditPage() {
                   <Switch
                     id="unlockByPhase"
                     checked={formData.unlockByPhase || false}
+                    disabled={formData.isFreeCourse}
                     onCheckedChange={(checked) => setFormData({ ...formData, unlockByPhase: checked })}
                   />
                 </div>
@@ -1593,7 +1624,7 @@ export default function CourseEditPage() {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeletePhase(phase.id);
+                        confirmDeletePhase(phase.id);
                       }}
                       className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                     >
@@ -1647,7 +1678,31 @@ export default function CourseEditPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleDeleteLesson(phase.id, lesson.id)}
+                                  onClick={() => handleEditLesson(lesson.id)}
+                                  className={cn(
+                                    "hover:bg-primary/10",
+                                    isDark ? "text-green-400 hover:text-green-300" : "text-green-600 hover:text-green-700"
+                                  )}
+                                  title="Sửa bài học (trực tiếp)"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleOpenLessonEditRequest(lesson)}
+                                  className={cn(
+                                    "hover:bg-primary/10",
+                                    isDark ? "text-purple-400 hover:text-purple-300" : "text-purple-600 hover:text-purple-700"
+                                  )}
+                                  title="Yêu cầu giảng viên sửa bài học"
+                                >
+                                  <Settings className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => confirmDeleteLesson(phase.id, lesson.id)}
                                   className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -1860,7 +1915,7 @@ export default function CourseEditPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteFinalTest(hackathon.id)}
+                          onClick={() => confirmDeleteFinalTest(hackathon.id)}
                           className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1958,7 +2013,7 @@ export default function CourseEditPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteFinalProject(project.id)}
+                          onClick={() => confirmDeleteFinalProject(project.id)}
                           className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -2092,8 +2147,7 @@ export default function CourseEditPage() {
                 <p className="mt-2">
                   Subscription: {
                     formData.subscriptionType === 'FREE' ? 'Miễn phí' :
-                    formData.subscriptionType === 'PREMIUM' ? `Premium (${formatPrice(formData.subscriptionPrice)})` :
-                    `Cả hai (${formatPrice(formData.subscriptionPrice)})`
+                    `Premium (${formatPrice(formData.subscriptionPrice)})`
                   }
                 </p>
               </div>
@@ -2633,6 +2687,100 @@ export default function CourseEditPage() {
               Không tìm thấy bài học
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Lesson Edit Request Dialog */}
+      <Dialog open={lessonEditRequestOpen} onOpenChange={setLessonEditRequestOpen}>
+        <DialogContent className={cn(
+          "max-w-lg",
+          isDark ? "bg-slate-900 border-slate-700" : ""
+        )}>
+          <DialogHeader>
+            <DialogTitle className={cn("flex items-center gap-2", isDark ? "text-white" : "")}>
+              Yêu cầu sửa bài học
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {editRequestLessonTitle && (
+              <div className={cn(
+                "p-3 rounded-lg",
+                isDark ? "bg-slate-800" : "bg-slate-50"
+              )}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Bài học:</p>
+                <p className={cn("font-medium", isDark ? "text-white" : "")}>
+                  {editRequestLessonTitle}
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label className={isDark ? "text-slate-300" : ""}>Giảng viên phụ trách *</Label>
+              <Select
+                value={editRequestLectureId}
+                onValueChange={setEditRequestLectureId}
+              >
+                <SelectTrigger className={cn(isDark && "bg-slate-800 border-slate-700 text-white")}>
+                  <SelectValue placeholder="Chọn giảng viên" />
+                </SelectTrigger>
+                <SelectContent className={isDark ? "bg-slate-800 border-slate-700" : ""}>
+                  {lectures.map((lecture) => (
+                    <SelectItem key={lecture.id} value={lecture.id}>
+                      {lecture.fullName || lecture.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className={isDark ? "text-slate-300" : ""}>Ghi chú (tùy chọn)</Label>
+              <Textarea
+                value={editRequestNotes}
+                onChange={(e) => setEditRequestNotes(e.target.value)}
+                placeholder="Mô tả những gì cần sửa..."
+                rows={3}
+                className={cn(
+                  isDark && "bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className={isDark ? "text-slate-300" : ""}>Hạn chót (tùy chọn)</Label>
+              <ConfigProvider
+                theme={{
+                  algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+                  token: { colorPrimary: '#06b6d4' },
+                }}
+              >
+                <DatePicker
+                  showTime
+                  format="DD/MM/YYYY HH:mm"
+                  value={editRequestDueDate}
+                  onChange={(date) => setEditRequestDueDate(date)}
+                  className="w-full"
+                  placeholder="Chọn ngày giờ"
+                />
+              </ConfigProvider>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setLessonEditRequestOpen(false)}
+              >
+                Hủy
+              </Button>
+              <Button
+                onClick={handleSubmitLessonEditRequest}
+                disabled={savingEditRequest}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                {savingEditRequest ? 'Đang gửi...' : 'Gửi yêu cầu'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

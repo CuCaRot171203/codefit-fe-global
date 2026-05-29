@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 
 const staggerContainer = {
@@ -8,10 +9,11 @@ const staggerContainer = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
 };
 
 const LoTrinhPage = () => {
+  const navigate = useNavigate();
   return (
     <main className="pt-0">
       {/* Hero Section */}
@@ -35,10 +37,10 @@ const LoTrinhPage = () => {
               Chinh phục các kỹ năng công nghệ hàng đầu thông qua phương pháp đào tạo tinh gọn, tập trung vào tư duy kiến trúc và thực chiến dự án thực tế.
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
-              <button className="bg-primary hover:bg-primary/90 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-headline font-bold uppercase tracking-wide glow-button transition-all text-sm sm:text-base">
+              <button onClick={() => navigate('/dang-nhap')} className="bg-primary hover:bg-primary/90 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-headline font-bold uppercase tracking-wide glow-button transition-all text-sm sm:text-base">
                 Khám phá ngay
               </button>
-              <button className="border border-outline-variant dark:border-slate-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-on-surface dark:text-slate-300 font-headline font-bold uppercase tracking-wide hover:bg-surface-container-low dark:hover:bg-slate-800 transition-all text-sm sm:text-base">
+              <button onClick={() => navigate('/dang-nhap')} className="border border-outline-variant dark:border-slate-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-on-surface dark:text-slate-300 font-headline font-bold uppercase tracking-wide hover:bg-surface-container-low dark:hover:bg-slate-800 transition-all text-sm sm:text-base">
                 Tư vấn lộ trình
               </button>
             </motion.div>
@@ -113,7 +115,7 @@ const LoTrinhPage = () => {
                     <span className="text-sm sm:text-base font-headline font-bold text-on-surface dark:text-white">2.4k+</span>
                   </div>
                 </div>
-                <button className="w-full border-2 border-primary text-primary dark:text-cyan-400 py-2.5 sm:py-3 md:py-4 rounded-xl font-headline font-bold uppercase hover:bg-primary hover:text-white dark:hover:bg-cyan-500 dark:hover:text-slate-900 transition-all text-xs sm:text-sm">
+                <button onClick={() => navigate('/dang-nhap')} className="w-full border-2 border-primary text-primary dark:text-cyan-400 py-2.5 sm:py-3 md:py-4 rounded-xl font-headline font-bold uppercase hover:bg-primary hover:text-white dark:hover:bg-cyan-500 dark:hover:text-slate-900 transition-all text-xs sm:text-sm">
                   Chi tiết lộ trình
                 </button>
               </div>
@@ -172,7 +174,7 @@ const LoTrinhPage = () => {
           <ScrollReveal delay={0.3} className="md:col-span-4 p-6 sm:p-8 rounded-2xl md:rounded-[2rem] bg-surface-container-highest dark:bg-slate-700 flex flex-col justify-center">
             <h3 className="text-xl sm:text-2xl font-headline font-bold mb-2 text-on-surface dark:text-white">+15 Khóa học mới</h3>
             <p className="text-on-surface-variant dark:text-slate-400 text-sm font-body">Được cập nhật hàng tháng theo xu hướng công nghệ mới nhất của thung lũng Silicon.</p>
-            <button className="mt-6 text-primary dark:text-cyan-400 font-headline font-bold text-sm uppercase flex items-center gap-2">
+            <button onClick={() => navigate('/dang-nhap')} className="mt-6 text-primary dark:text-cyan-400 font-headline font-bold text-sm uppercase flex items-center gap-2">
               Xem tất cả <span className="material-symbols-outlined text-sm">east</span>
             </button>
           </ScrollReveal>
@@ -261,7 +263,7 @@ const LoTrinhPage = () => {
                 Gia nhập cộng đồng 10,000+ lập trình viên đang thay đổi thế giới mỗi ngày tại CodeFit.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <button className="bg-primary-container dark:bg-cyan-500 text-on-primary-container dark:text-slate-900 px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-headline font-black uppercase tracking-widest hover:scale-105 transition-transform text-sm sm:text-base">
+                <button onClick={() => navigate('/dang-nhap')} className="bg-primary-container dark:bg-cyan-500 text-on-primary-container dark:text-slate-900 px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-headline font-black uppercase tracking-widest hover:scale-105 transition-transform text-sm sm:text-base">
                   Bắt đầu miễn phí
                 </button>
               </div>

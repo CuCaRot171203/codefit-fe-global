@@ -37,7 +37,6 @@ export const EnrollmentModal = ({
   isOpen,
   onClose,
   course,
-  onCheckout,
 }: EnrollmentModalProps) => {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);

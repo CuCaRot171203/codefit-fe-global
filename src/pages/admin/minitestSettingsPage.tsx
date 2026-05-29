@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAdmin } from '@/contexts/AdminContext';
 import { useAppSelector } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,10 +15,8 @@ import {
   Plus,
   Trash2,
   Edit,
-  Save,
   FileQuestion,
   Loader2,
-  CheckCircle,
   XCircle,
   Settings,
   BookOpen,

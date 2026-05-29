@@ -3,18 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 import { cn } from '@/lib/utils';
 import { API_ENDPOINTS } from '@/config/api';
-import Editor, { loader as monacoLoader } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import type { OnMount } from '@monaco-editor/react';
 import {
   Play, Lightbulb, Send, Loader2, CheckCircle, XCircle,
-  Clock, Code, Eye, Terminal, FileText, Zap, AlertTriangle,
+  Clock, Code, Eye, Terminal, FileText, AlertTriangle,
   Copy, Check, ChevronLeft, ChevronRight, ChevronDown, PlayCircle, BookmarkCheck, RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { notification } from 'antd';
 
 const SUPPORTED_LANGUAGES = [
@@ -34,13 +33,25 @@ interface Lesson {
   content: string;
   phaseId: string;
   orderIndex: number;
+  lessons?: Array<{
+    id: string;
+    title: string;
+    orderIndex: number;
+    phase?: {
+      id: string;
+      orderIndex?: number;
+    };
+  }>;
   phase?: {
     id: string;
     title: string;
+    orderIndex?: number;
     courseId: string;
     course?: {
       id: string;
       title: string;
+      hackathons?: { id: string; title: string }[];
+      projects?: { id: string; title: string }[];
     };
     lessons?: {
       id: string;
@@ -230,7 +241,6 @@ const UserLessonPage = () => {
     try {
       setMarkingComplete(true);
       const token = localStorage.getItem('token');
-      const isValidToken = token && token !== 'undefined' && token !== 'null' && token.length > 20;
       const response = await fetch(API_ENDPOINTS.lessonProgress.complete, {
         method: 'POST',
         headers: {
@@ -405,7 +415,6 @@ const UserLessonPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const isValidToken = token && token !== 'undefined' && token !== 'null' && token.length > 20;
       const response = await fetch(API_ENDPOINTS.scoring.run, {
         method: 'POST',
         headers: {
@@ -492,7 +501,6 @@ const UserLessonPage = () => {
     try {
       setSubmitting(true);
       const token = localStorage.getItem('token');
-      const isValidToken = token && token !== 'undefined' && token !== 'null' && token.length > 20;
       const response = await fetch(API_ENDPOINTS.scoring.submit, {
         method: 'POST',
         headers: {
@@ -521,7 +529,7 @@ const UserLessonPage = () => {
           message: 'Điểm nhận được',
           description: `Số điểm còn lại bạn nhận được: ${remainingScore} điểm`,
           duration: 2,
-          placement: 'topCenter',
+          placement: 'top',
         });
         
         // Check if all tests passed using the new API response

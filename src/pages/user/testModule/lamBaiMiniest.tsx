@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { RootState } from '@/store';
 import { API_ENDPOINTS } from '@/config/api';
-import { 
-  Timer, Play, Send, ChevronUp, RotateCcw, AlertTriangle, 
+import {
+  Timer, Play, Send, RotateCcw, AlertTriangle,
   ChevronLeft, ChevronRight, Loader2, CheckCircle, XCircle,
-  FileText, Clock, Code, Terminal, Eye
+  FileText, Code, Terminal
 } from 'lucide-react';
 import MonacoEditor from '@monaco-editor/react';
 import { notification } from 'antd';
@@ -92,7 +92,7 @@ const LamBaiMinitest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [runningCode, setRunningCode] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
-  const [submitResults, setSubmitResults] = useState<any>(null);
+  const [_submitResults, setSubmitResults] = useState<any>(null);
 
   // Fetch minitest data
   useEffect(() => {

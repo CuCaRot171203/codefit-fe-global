@@ -166,39 +166,6 @@ export default function UserEditPage() {
     }
   };
 
-  const handleAssignCourse = async (courseId: string) => {
-    if (!userId) return;
-    setAssigningCourse(courseId);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(API_ENDPOINTS.admin.assignCourse(userId, courseId), {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      const data = await response.json();
-      if (data.success) {
-        notification.success({
-          message: 'Thành công',
-          description: 'Đã chỉ định khóa học cho giảng viên. Giảng viên sẽ nhận được thông báo.',
-        });
-        await fetchUser(userId);
-      } else {
-        notification.error({
-          message: 'Lỗi',
-          description: data.message || 'Không thể chỉ định khóa học',
-        });
-      }
-    } catch (error) {
-      console.error('Error assigning course:', error);
-      notification.error({
-        message: 'Lỗi',
-        description: 'Đã xảy ra lỗi khi chỉ định khóa học',
-      });
-    } finally {
-      setAssigningCourse(null);
-    }
-  };
-
   const handleUnassignCourse = async (courseId: string) => {
     if (!userId) return;
     if (!confirm('Bạn có chắc muốn gỡ giảng viên khỏi khóa học này?')) {
@@ -904,10 +871,7 @@ export default function UserEditPage() {
         onCancel={() => setCourseModalOpen(false)}
         footer={null}
         width={600}
-        classNames={{
-          content: isDark ? 'bg-slate-800 border-slate-700' : '',
-          header: isDark ? 'bg-slate-800 border-slate-700' : '',
-        }}
+        className={isDark ? 'dark-modal' : ''}
       >
         {/* Search */}
         <div className="relative mb-4">
@@ -1038,10 +1002,7 @@ export default function UserEditPage() {
         okButtonProps={{
           className: 'bg-cyan-500 hover:bg-cyan-600',
         }}
-        classNames={{
-          content: isDark ? 'bg-slate-800 border-slate-700' : '',
-          header: isDark ? 'bg-slate-800 border-slate-700' : '',
-        }}
+        className={isDark ? 'dark-modal' : ''}
       >
         {selectedCourseForAssign && (
           <div className="py-4">

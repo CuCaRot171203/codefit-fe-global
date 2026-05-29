@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input as UIInput } from '@/components/ui/input';
 import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
-import { Select, InputNumber, DatePicker, Upload, message, Modal } from 'antd';
+import { Select, DatePicker, Upload, message, Modal, Input as AntInput, InputNumber } from 'antd';
 import type { UploadProps } from 'antd';
-import { Trophy, ArrowLeft, Loader2, ChevronRight, Layers, Save, Plus, Trash2, Code, FileText, Eye } from 'lucide-react';
+import { Trophy, ArrowLeft, Loader2, ChevronRight, Layers, Save, Plus, Trash2, FileText, Eye, Code } from 'lucide-react';
 import dayjs from 'dayjs';
 
 interface Course {
@@ -558,7 +558,7 @@ export default function HackathonEditPage() {
                       min={1}
                       max={maxDurationMinutes || 999}
                       value={form.durationMinutes}
-                      onChange={(val) => setForm({ ...form, durationMinutes: val || 120 })}
+                      onChange={(val: number | null) => setForm({ ...form, durationMinutes: val || 120 })}
                       style={inputStyles}
                       className={cn("w-full", isDark ? 'ant-input-number-dark' : '')}
                     />
@@ -573,7 +573,7 @@ export default function HackathonEditPage() {
                     <InputNumber
                       min={1}
                       value={form.maxParticipants}
-                      onChange={(val) => setForm({ ...form, maxParticipants: val || 100 })}
+                      onChange={(val: number | null) => setForm({ ...form, maxParticipants: val || 100 })}
                       style={inputStyles}
                       className={cn("w-full", isDark ? 'ant-input-number-dark' : '')}
                     />
@@ -844,7 +844,7 @@ export default function HackathonEditPage() {
         width={800}
         styles={{
           mask: { backgroundColor: isDark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.45)' },
-          content: { backgroundColor: isDark ? '#1e293b' : '#fff' },
+          body: { backgroundColor: isDark ? '#1e293b' : '#fff' },
         }}
       >
         {editingProblem && (
@@ -853,7 +853,7 @@ export default function HackathonEditPage() {
               <label className={cn("block text-sm font-medium mb-2", isDark ? 'text-slate-300' : '')}>
                 Tiêu đề bài tập <span className="text-red-500">*</span>
               </label>
-              <Input
+              <AntInput
                 placeholder="VD: Tính tổng 2 số"
                 value={editingProblem.title}
                 onChange={(e) => setEditingProblem({ ...editingProblem, title: e.target.value })}
@@ -900,7 +900,7 @@ export default function HackathonEditPage() {
                 <label className={cn("block text-sm font-medium mb-2", isDark ? 'text-slate-300' : '')}>
                   Input Format
                 </label>
-                <Input
+                <AntInput
                   placeholder="VD: a, b (cách nhau bởi dấu cách)"
                   value={editingProblem.inputFormat}
                   onChange={(e) => setEditingProblem({ ...editingProblem, inputFormat: e.target.value })}
@@ -911,7 +911,7 @@ export default function HackathonEditPage() {
                 <label className={cn("block text-sm font-medium mb-2", isDark ? 'text-slate-300' : '')}>
                   Output Format
                 </label>
-                <Input
+                <AntInput
                   placeholder="VD: Sum of a and b"
                   value={editingProblem.outputFormat}
                   onChange={(e) => setEditingProblem({ ...editingProblem, outputFormat: e.target.value })}
@@ -924,7 +924,7 @@ export default function HackathonEditPage() {
               <label className={cn("block text-sm font-medium mb-2", isDark ? 'text-slate-300' : '')}>
                 Code Template
               </label>
-              <Input.TextArea
+              <AntInput.TextArea
                 rows={4}
                 placeholder="// Write your code here"
                 value={editingProblem.codeTemplate}
@@ -971,7 +971,7 @@ export default function HackathonEditPage() {
                         <label className={cn("text-xs mb-1 block", isDark ? 'text-slate-400' : 'text-slate-500')}>
                           Input
                         </label>
-                        <Input.TextArea
+                        <AntInput.TextArea
                           rows={2}
                           placeholder="Input"
                           value={tc.input}
@@ -983,7 +983,7 @@ export default function HackathonEditPage() {
                         <label className={cn("text-xs mb-1 block", isDark ? 'text-slate-400' : 'text-slate-500')}>
                           Expected Output
                         </label>
-                        <Input.TextArea
+                        <AntInput.TextArea
                           rows={2}
                           placeholder="Output mong đợi"
                           value={tc.expectedOutput}
@@ -1024,7 +1024,7 @@ export default function HackathonEditPage() {
         width={800}
         styles={{
           mask: { backgroundColor: isDark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.45)' },
-          content: { backgroundColor: isDark ? '#1e293b' : '#fff' },
+          body: { backgroundColor: isDark ? '#1e293b' : '#fff' },
         }}
       >
         {previewLesson && (

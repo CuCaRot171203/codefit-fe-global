@@ -11,7 +11,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAppSelector } from '@/store';
 import { cn } from '@/lib/utils';
 import { message, Upload as AntUpload } from 'antd';
-import type { UploadFile, UploadProps } from 'antd';
+import type { UploadProps } from 'antd';
 import {
   Bold,
   Italic,

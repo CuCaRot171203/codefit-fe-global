@@ -13,6 +13,8 @@ interface PaymentInfo {
   courseId: string;
   amount: number;
   paymentStatus: string;
+  payosOrderId?: string | number;
+  orderCode?: string | number;
 }
 
 export default function PaymentSuccessPage() {
@@ -45,7 +47,7 @@ export default function PaymentSuccessPage() {
       const urlCourseId = params.get('courseId');
 
       const token = localStorage.getItem('token');
-      const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+      const authHeader: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
       const payosSuccess =
         payosStatus === 'PAID' || payosCode === '00' || payosCode === '0';

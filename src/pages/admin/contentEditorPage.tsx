@@ -9,13 +9,11 @@ import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
 import {
   ArrowLeft,
-  Save,
   Plus,
   Trash2,
   Edit,
   Video,
   Code,
-  FileText,
   TestTube,
   ChevronDown,
   ChevronRight,
@@ -198,37 +196,6 @@ export default function ContentEditorPage() {
       }
     } catch (error) {
       console.error('Error adding lesson:', error);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleUpdateLesson = async () => {
-    if (!editingLesson || !lessonForm.title.trim()) return;
-    setSaving(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(API_ENDPOINTS.admin.lesson(editingLesson.id), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(lessonForm),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setPhases(phases.map((p) => ({
-          ...p,
-          lessons: p.lessons.map((l) =>
-            l.id === editingLesson.id ? { ...l, ...lessonForm } : l
-          ),
-        })));
-        setEditingLesson(null);
-        setLessonForm({ title: '', content: '', type: 'video' });
-      }
-    } catch (error) {
-      console.error('Error updating lesson:', error);
     } finally {
       setSaving(false);
     }

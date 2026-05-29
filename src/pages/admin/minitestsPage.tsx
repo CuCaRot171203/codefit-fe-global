@@ -10,24 +10,18 @@ import { message } from 'antd';
 import {
   FlaskConical,
   Search,
-  Edit,
   Trash2,
   Plus,
   Loader2,
   FileQuestion,
   BookOpen,
-  Clock,
   Users,
   CheckCircle,
-  XCircle,
   TrendingUp,
   Eye,
-  ChevronDown,
-  ChevronRight,
-  X,
   Award,
   Target,
-  BarChart3,
+  X,
 } from 'lucide-react';
 import {
   Dialog,
@@ -108,7 +102,7 @@ export default function AdminMinitestsPage() {
   const [phaseFilter, setPhaseFilter] = useState<string>('all');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newMinitest, setNewMinitest] = useState({ title: '', phaseId: '' });
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [_expandedItems, _setExpandedItems] = useState<Set<string>>(new Set());
   
   // Modal states
   const [selectedMinitest, setSelectedMinitest] = useState<MinitestStats | null>(null);
@@ -221,16 +215,6 @@ export default function AdminMinitestsPage() {
       console.error('Error deleting minitest:', error);
       message.error('Xóa minitest thất bại');
     }
-  };
-
-  const toggleExpand = (id: string) => {
-    const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(id)) {
-      newExpanded.delete(id);
-    } else {
-      newExpanded.add(id);
-    }
-    setExpandedItems(newExpanded);
   };
 
   const handleViewDetail = async (stats: MinitestStats) => {

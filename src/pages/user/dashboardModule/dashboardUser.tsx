@@ -108,7 +108,7 @@ const DashboardUser = () => {
   const [globalRank, setGlobalRank] = useState<GlobalRank | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUserData();
@@ -176,7 +176,7 @@ const DashboardUser = () => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     try {
       const [scoreRes, loginRes, rankRes, activityRes, coursesRes, evalRes] = await Promise.all([
@@ -242,12 +242,6 @@ const DashboardUser = () => {
   })) || [];
 
   // Evaluation helper
-  const getEvalColor = (score: number) => {
-    if (score >= 70) return 'bg-emerald-500';
-    if (score >= 40) return 'bg-amber-500';
-    return 'bg-red-500';
-  };
-
   const getEvalLabel = (score: number) => {
     if (score >= 70) return 'Tốt';
     if (score >= 40) return 'Trung bình';
@@ -327,7 +321,7 @@ const DashboardUser = () => {
                 </div>
                 <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
-                  {scoreBreakdown?.courses.length > 0
+                  {scoreBreakdown?.courses?.length && scoreBreakdown.courses.length > 0
                     ? `Từ ${scoreBreakdown.courses.length} khóa học`
                     : 'Bắt đầu ngay hôm nay'}
                 </p>
@@ -442,7 +436,7 @@ const DashboardUser = () => {
                       axisLine={false}
                     />
                     <Tooltip
-                      formatter={(value: number) => [`${value} hoạt động`, 'Số lượng']}
+                      formatter={(value) => [`${value} hoạt động`, 'Số lượng']}
                       contentStyle={{
                         backgroundColor: 'var(--card)',
                         border: '1px solid var(--border)',

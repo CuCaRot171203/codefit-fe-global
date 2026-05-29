@@ -1,20 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { toggleSidebar, clearUser } from '@/store/slices/adminSlice';
+import { clearUser, toggleSidebar } from '@/store/slices/adminSlice';
 import { toggleTheme } from '@/store/slices/themeSlice';
 import { AdminProvider } from '@/contexts/AdminContext';
 import { ConfigProvider, theme as antTheme } from 'antd';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
 import {
   LayoutDashboard,
   Users,
   BookOpen,
-  CreditCard,
-  GraduationCap,
   LogOut,
   Menu,
   X,
@@ -22,14 +19,12 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Search,
   Bell,
   Settings,
   User,
   FlaskConical,
   Trophy,
   UserCog,
-  Check,
   CheckCheck,
   Loader2,
   FileText,
@@ -235,20 +230,6 @@ export default function AdminLayout() {
     } else if (notification.link) {
       // Navigate to provided link
       navigate(notification.link);
-    }
-  };
-
-  // Mark all as read
-  const markAllAsRead = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await fetch(API_ENDPOINTS.notifications.readAll, {
-        method: 'PUT',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error('Error marking all as read:', error);
     }
   };
 
@@ -559,7 +540,7 @@ export default function AdminLayout() {
                         </button>
                       )}
                       <button
-                        onClick={() => fetchNotifications(true)}
+                        onClick={() => fetchNotifications()}
                         disabled={loadingNotifications}
                         className={cn(
                           'text-xs flex items-center gap-1 px-2 py-1 rounded-lg transition-colors',
@@ -769,6 +750,19 @@ export default function AdminLayout() {
                     </p>
                   </div>
                   <div className="py-1">
+                    <Link
+                      to={user?.role === 'lecture' ? '/lecture/dashboard' : user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2 text-sm transition-colors',
+                        isDark
+                          ? 'text-slate-300 hover:bg-slate-700'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      )}
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Đến Dashboard
+                    </Link>
                     <Link
                       to="/admin/profile"
                       className={cn(

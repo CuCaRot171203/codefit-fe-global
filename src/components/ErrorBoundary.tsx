@@ -1,4 +1,4 @@
-import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useAppSelector } from '@/store';
 
 interface ErrorBoundaryProps {
@@ -110,15 +110,7 @@ function ErrorBoundaryFallback({ error }: { error: Error | null }) {
  * Wrapper component that allows ErrorBoundary to use hooks
  * (class components can't use hooks directly)
  */
-function ErrorBoundaryWrapper({ children, fallback }: ErrorBoundaryProps): JSX.Element {
-  const theme = useAppSelector((state) => state.theme.theme);
-
-  const content = (
-    <ErrorBoundaryClass fallback={fallback}>
-      {children}
-    </ErrorBoundaryClass>
-  );
-
+function ErrorBoundaryWrapper({ children, fallback }: ErrorBoundaryProps): ReactNode {
   return (
     <ErrorBoundaryClass fallback={fallback}>
       {children}

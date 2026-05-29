@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAdmin } from '@/contexts/AdminContext';
 import { useAppSelector } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,9 +21,6 @@ import {
   Clock,
   XCircle,
   Eye,
-  Code,
-  Upload,
-  X,
   Image as ImageIcon,
   FileArchive,
 } from 'lucide-react';
@@ -382,7 +378,7 @@ Tiêu chí chấm điểm:
                         maxCount={1}
                         accept="image/*"
                         className={isDark ? "ant-upload-dark" : ""}
-                        onPreview={(file) => {
+                        onPreview={(_file) => {
                           if (imageUrl) {
                             window.open(imageUrl, '_blank');
                           }

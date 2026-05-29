@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard } from 'lucide-react';
 import { useAppSelector } from '@/store';
 import { useEffect, useState } from 'react';
 import ErrorCharacter from './ErrorCharacter';

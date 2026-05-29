@@ -5,13 +5,11 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import type { RootState } from '@/store';
 import { hackathonService } from '@/services/api';
 import {
   Users,
-  Terminal,
   Shield,
   Timer,
   Trophy,
@@ -19,12 +17,10 @@ import {
   Bolt,
   Gavel,
   HelpCircle,
-  Plus,
   Clock,
   CheckCircle,
   BarChart3,
   Medal,
-  Crown,
   AlertCircle,
 } from 'lucide-react';
 
@@ -38,6 +34,8 @@ interface Hackathon {
   maxParticipants: number;
   durationMinutes: number;
   problems?: any[];
+  hackathons?: any[];
+  projects?: any[];
   _count?: {
     participants: number;
     submissions: number;
@@ -131,7 +129,7 @@ const ChiTietHackathon = () => {
         return;
       }
 
-      const data = detailRes.data;
+      const data = detailRes.data as Hackathon;
       setHackathon(data);
 
       if (data.problems && Array.isArray(data.problems)) {
@@ -142,13 +140,13 @@ const ChiTietHackathon = () => {
 
       if (token && participantsRes.success) {
         const currentUserId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
-        const isUserRegistered = (participantsRes.data || []).some(
+        const isUserRegistered = ((participantsRes.data || []) as any[]).some(
           (p: any) => p.userId === currentUserId
         );
         setIsRegistered(isUserRegistered);
       }
 
-      setParticipants(participantsRes.data || []);
+      setParticipants((participantsRes.data || []) as Participant[]);
 
       if (status === 'upcoming') {
         updateCountdown(data.startTime);

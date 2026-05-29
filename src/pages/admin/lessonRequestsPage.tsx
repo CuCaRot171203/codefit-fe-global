@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { API_ENDPOINTS } from '@/config/api';
 import {
   BookOpen, Clock, User, Plus, Search,
-  Filter, Eye, Trash2, Edit, CheckCircle, XCircle, AlertCircle, LayoutGrid, List
+  Filter, Eye, Trash2, CheckCircle, XCircle, AlertCircle, LayoutGrid, List
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,9 +26,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Table } from 'antd';
-import type { TableProps } from 'antd';
 import { message } from 'antd';
 import { KanbanBoard } from '@/components/admin';
 

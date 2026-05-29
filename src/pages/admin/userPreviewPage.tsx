@@ -11,7 +11,6 @@ import {
   GraduationCap,
   Users,
   Mail,
-  Phone,
   School,
   Calendar,
   BookOpen,
@@ -861,10 +860,7 @@ export default function UserPreviewPage() {
         onCancel={() => setCourseModalOpen(false)}
         footer={null}
         width={600}
-        classNames={{
-          content: isDark ? 'bg-slate-800 border-slate-700' : '',
-          header: isDark ? 'bg-slate-800 border-slate-700' : '',
-        }}
+        className={isDark ? 'dark-modal' : ''}
       >
         {/* Search */}
         <div className="relative mb-4">
@@ -996,10 +992,7 @@ export default function UserPreviewPage() {
           className: 'bg-cyan-500 hover:bg-cyan-600',
         }}
         confirmLoading={assigningCourse}
-        classNames={{
-          content: isDark ? 'bg-slate-800 border-slate-700' : '',
-          header: isDark ? 'bg-slate-800 border-slate-700' : '',
-        }}
+        className={isDark ? 'dark-modal' : ''}
       >
         {selectedCourse && (
           <div className="py-4">

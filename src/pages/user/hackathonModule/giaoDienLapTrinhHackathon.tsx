@@ -84,9 +84,9 @@ const GiaoDienLapTrinhHackathon = () => {
   const [problemDescription, setProblemDescription] = useState('');
   const [problemDifficulty, setProblemDifficulty] = useState('medium');
   const [problemPoints, setProblemPoints] = useState(100);
-  const [problemExamples, setProblemExamples] = useState<{ input: string; output: string }[]>([]);
-  const [problemConstraints, setProblemConstraints] = useState<string[]>([]);
-  const [testCases, setTestCases] = useState<any[]>([]);
+  const [problemExamples] = useState<{ input: string; output: string }[]>([]);
+  const [problemConstraints] = useState<string[]>([]);
+  const [testResults, setTestResults] = useState<TestResult[]>([]);
 
   // UI states
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
@@ -99,7 +99,6 @@ const GiaoDienLapTrinhHackathon = () => {
   // Running/submission states
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
   const [lastSubmissionResult, setLastSubmissionResult] = useState<any>(null);
   const [loadingProblem, setLoadingProblem] = useState(true);
@@ -129,9 +128,10 @@ const GiaoDienLapTrinhHackathon = () => {
           return;
         }
 
-        setHackathonTitle(hackathonRes.data?.title || 'Hackathon');
+        const hackathonData = hackathonRes.data as any;
+        setHackathonTitle(hackathonData?.title || 'Hackathon');
 
-        const endDate = hackathonRes.data?.endTime || hackathonRes.data?.endDate;
+        const endDate = hackathonData?.endTime || hackathonData?.endDate;
         if (endDate) {
           setEndTime(new Date(endDate));
         }
@@ -142,8 +142,9 @@ const GiaoDienLapTrinhHackathon = () => {
           return;
         }
 
-        const { problems } = problemsRes.data || {};
-        const selectedProblem = problems?.find((p: any) => p.id === problemId);
+        const problemsData = problemsRes.data as any;
+        const problems = problemsData?.problems || [];
+        const selectedProblem = (problems as any[]).find((p: any) => p.id === problemId);
 
         if (!selectedProblem) {
           setError('Không tìm thấy bài này');
@@ -239,10 +240,11 @@ const GiaoDienLapTrinhHackathon = () => {
     try {
       const res = await hackathonService.runProblem(hackathonId, problemId, code, selectedLanguage.id);
       if (res.success) {
-        const results = res.data?.results || [];
+        const data = res.data as any;
+        const results = data?.results || [];
         setTestResults(results);
         setConsoleOutput([
-          `Kết quả: ${res.data?.passedTests || 0}/${res.data?.totalTests || 0} test cases passed`,
+          `Kết quả: ${data?.passedTests || 0}/${data?.totalTests || 0} test cases passed`,
           ...results.filter((r: TestResult) => r.isPublic !== false).map((r: TestResult, i: number) =>
             `${r.passed ? '✓' : '✗'} Test ${i + 1}: ${r.passed ? 'PASSED' : 'FAILED'}\n   Input: ${r.input}\n   Expected: ${r.expectedOutput}\n   Actual: ${r.actualOutput}`
           ),
@@ -266,8 +268,9 @@ const GiaoDienLapTrinhHackathon = () => {
     try {
       const res = await hackathonService.submitProblem(hackathonId, problemId, code, selectedLanguage.id);
       if (res.success) {
-        const { passedTests, totalTests, score, allPassed } = res.data || {};
-        setLastSubmissionResult(res.data);
+        const data = res.data as any;
+        const { passedTests = 0, totalTests = 0, score = 0, allPassed = false } = data || {};
+        setLastSubmissionResult(data);
         setConsoleOutput([
           allPassed ? '✓ Tất cả test cases đã PASSED!' : `Kết quả: ${passedTests}/${totalTests} test cases passed`,
           `Điểm: ${score}/100`,

@@ -131,7 +131,7 @@ const KetQuaFinalTest = () => {
       if (token) headers.Authorization = `Bearer ${token}`;
 
       // Fetch course with projects to get the project ID
-      const courseRes = await fetch(`${API_ENDPOINTS.courses.detail(hackathon?.courseId)}`, { headers });
+        const courseRes = await fetch(`${API_ENDPOINTS.courses.detail(hackathon?.courseId || '')}`, { headers });
       const courseData = await courseRes.json();
 
       if (courseData.success && courseData.data.projects?.length > 0) {

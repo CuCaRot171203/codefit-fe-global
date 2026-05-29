@@ -96,7 +96,6 @@ const LessonRequestCreatePage = () => {
 
   const selectedCourseData = courses.find(c => c.id === selectedCourse);
   const selectedPhaseData = selectedCourseData?.phases.find(p => p.id === selectedPhase);
-  const selectedLessonData = selectedPhaseData?.lessons.find(l => l.id === selectedLesson);
 
   const handleSubmit = async () => {
     if (!selectedLecture || !selectedLesson) {

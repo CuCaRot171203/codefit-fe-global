@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLecture } from '@/contexts/LectureContext';
 import { cn } from '@/lib/utils';
-import { Target, ChevronRight, Loader2, Clock, Users } from 'lucide-react';
+import { Target, Loader2, Users, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { API_ENDPOINTS } from '@/config/api';

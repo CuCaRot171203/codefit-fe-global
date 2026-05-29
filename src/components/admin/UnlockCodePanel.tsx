@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -27,7 +27,6 @@ import {
   ChevronUp,
   LockOpen,
   Unlock,
-  Eye,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '@/config/api';
 
@@ -108,7 +107,6 @@ export function UnlockCodePanel({
   // Enrollments (users with progress)
   const [enrollments, setEnrollments] = useState<EnrollmentInfo[]>([]);
   const [loadingEnrollments, setLoadingEnrollments] = useState(false);
-  const [expandedEnrollment, setExpandedEnrollment] = useState<string | null>(null);
   const [updatingUnlocks, setUpdatingUnlocks] = useState<string | null>(null);
   const [unlockDialog, setUnlockDialog] = useState<{ open: boolean; enrollment: EnrollmentInfo | null }>({ open: false, enrollment: null });
   const [newUnlockCount, setNewUnlockCount] = useState<number>(0);

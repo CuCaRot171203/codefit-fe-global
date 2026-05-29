@@ -11,7 +11,7 @@ export interface ChatMessage {
 }
 
 export interface ChatContext {
-  type: 'course' | 'lesson' | 'minitest' | 'hackathon' | null;
+  type?: 'course' | 'lesson' | 'minitest' | 'hackathon' | 'general';
   id?: string;
   title?: string;
   courseName?: string;

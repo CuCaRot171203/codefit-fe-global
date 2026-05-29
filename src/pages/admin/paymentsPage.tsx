@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAdmin } from '@/contexts/AdminContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { API_ENDPOINTS } from '@/config/api';
@@ -13,7 +12,6 @@ import {
   XCircle,
   QrCode,
   KeyRound,
-  Download,
   TrendingUp,
 } from 'lucide-react';
 import {
@@ -62,7 +60,6 @@ interface Course {
 }
 
 export default function AdminPaymentsPage() {
-  const { isDark } = useAdmin();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<PaymentStats | null>(null);
   const [activateCodes, setActivateCodes] = useState<ActivateCode[]>([]);
@@ -82,7 +79,7 @@ export default function AdminPaymentsPage() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
       const [paymentsRes, statsRes, codesRes, coursesRes] = await Promise.all([
         fetch(API_ENDPOINTS.admin.payments, { headers }),

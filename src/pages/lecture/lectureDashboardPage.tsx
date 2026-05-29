@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLecture } from '@/contexts/LectureContext';
 import { cn } from '@/lib/utils';
 import { BookOpen, Target, Trophy, Users, Loader2, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { API_ENDPOINTS } from '@/config/api';
 
 interface DashboardStats {
@@ -16,7 +16,7 @@ const LectureDashboardPage = () => {
   const { isDark } = useLecture();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDashboard();

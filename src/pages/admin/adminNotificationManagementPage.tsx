@@ -4,13 +4,13 @@ import { useAppSelector } from '@/store';
 import { cn } from '@/lib/utils';
 import { API_ENDPOINTS } from '@/config/api';
 import {
-  Bell, Check, CheckCheck, Loader2, Mail, AlertCircle, Info,
+  Bell, Check, Loader2, Mail, AlertCircle, Info,
   CheckCircle, XCircle, BookOpen, ArrowRight, Eye, FileText,
-  Code, MessageSquare, Clock, User, Trash2, Filter, Search,
-  ChevronDown, Send, RefreshCw, History
+  Code, MessageSquare, Clock, User, Trash2, Search,
+  Send, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {

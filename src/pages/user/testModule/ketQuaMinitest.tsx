@@ -14,7 +14,6 @@ import {
   Zap,
   Timer,
   RefreshCw,
-  Eye,
   Lightbulb,
   Star,
   ChevronRight,
@@ -37,6 +36,7 @@ interface Minitest {
   title: string;
   phase?: {
     title: string;
+    lessons?: { id: string; title: string; orderIndex: number; isCompleted?: boolean }[];
     course?: {
       title: string;
     };

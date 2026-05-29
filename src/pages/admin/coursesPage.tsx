@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { API_ENDPOINTS } from '@/config/api';
@@ -21,7 +21,6 @@ import {
   Loader2,
   FileText,
   ListChecks,
-  ExternalLink,
 } from 'lucide-react';
 
 interface Phase {

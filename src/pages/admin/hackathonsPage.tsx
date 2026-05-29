@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { API_ENDPOINTS } from '@/config/api';
 import { cn } from '@/lib/utils';
 import { Modal, message, Table } from 'antd';
-import { Trophy, Search, Edit, Trash2, Plus, Loader2, Calendar, Users, Clock, Play, LayoutGrid, List, X, Eye } from 'lucide-react';
+import { Trophy, Search, Edit, Trash2, Plus, Loader2, Calendar, Users, Clock, Play, LayoutGrid, List, Eye, X } from 'lucide-react';
 
 interface Hackathon {
   id: string;
@@ -41,7 +41,7 @@ export default function AdminHackathonsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedHackathon, setSelectedHackathon] = useState<Hackathon | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [editLoading, setEditLoading] = useState(false);
+  const [, setEditLoading] = useState(false);
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -85,11 +85,6 @@ export default function AdminHackathonsPage() {
   };
 
   // Handlers
-  const handleView = (hackathon: Hackathon) => {
-    setSelectedHackathon(hackathon);
-    setViewModalOpen(true);
-  };
-
   const handleEdit = (hackathon: Hackathon) => {
     setSelectedHackathon(hackathon);
     setEditForm({
@@ -635,7 +630,7 @@ export default function AdminHackathonsPage() {
           <Button key="close" onClick={() => setViewModalOpen(false)}>
             Đóng
           </Button>,
-          <Button key="edit" type="primary" onClick={() => { setViewModalOpen(false); handleEdit(selectedHackathon!); }}>
+          <Button key="edit" onClick={() => { setViewModalOpen(false); handleEdit(selectedHackathon!); }}>
             <Edit className="w-4 h-4 mr-1" /> Sửa
           </Button>
         ]}
@@ -707,7 +702,7 @@ export default function AdminHackathonsPage() {
           <Button key="cancel" onClick={() => setEditModalOpen(false)}>
             Hủy
           </Button>,
-          <Button key="save" type="primary" loading={editLoading} onClick={handleUpdate}>
+          <Button key="save" onClick={handleUpdate}>
             Lưu
           </Button>
         ]}

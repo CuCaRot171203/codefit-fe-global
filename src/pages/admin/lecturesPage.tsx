@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,6 @@ import {
   BookOpen,
   Plus,
   Search,
-  Edit,
   Trash2,
   ChevronDown,
   ChevronRight,
@@ -17,7 +16,6 @@ import {
   Video,
   Code,
   Loader2,
-  X,
 } from 'lucide-react';
 import {
   Dialog,
@@ -53,7 +51,7 @@ interface Lesson {
 }
 
 export default function AdminLecturesPage() {
-  const { isDark } = useAdmin();
+  const { isDark: _isDark } = useAdmin();
   const [courses, setCourses] = useState<Course[]>([]);
   const [phases, setPhases] = useState<Phase[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
@@ -65,8 +63,6 @@ export default function AdminLecturesPage() {
   const [showCourseDialog, setShowCourseDialog] = useState(false);
   const [showPhaseDialog, setShowPhaseDialog] = useState(false);
   const [showLessonDialog, setShowLessonDialog] = useState(false);
-  const [editingPhase, setEditingPhase] = useState<Phase | null>(null);
-  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [saving, setSaving] = useState(false);
 
   // Form states

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, LayoutDashboard, BookOpen, Terminal, Users, HelpCircle, BarChart3, Trophy, Bot } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, BookOpen, HelpCircle, BarChart3, Trophy, Bot } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,

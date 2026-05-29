@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import {
   ArrowLeft,
   BookOpen,
-  GraduationCap,
   FileText,
   Trophy,
   Clock,
@@ -121,7 +120,7 @@ export default function InstructorDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'courses' | 'lessons' | 'minitests' | 'hackathons'>('overview');
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [availableCourses, setAvailableCourses] = useState<any[]>([]);
-  const [assigningCourse, setAssigningCourse] = useState<string | null>(null);
+  const [, setAssigningCourse] = useState<string | null>(null);
 
   useEffect(() => {
     fetchInstructorDetail();
