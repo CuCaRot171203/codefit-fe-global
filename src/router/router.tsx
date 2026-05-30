@@ -30,6 +30,7 @@ const LoginPage = lazy(() => import('@/pages/auth/loginPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgotPassword'));
 const ResetPasswordForm = lazy(() => import('@/pages/auth/resetPasswordForm'));
 const ResetPasswordSuccess = lazy(() => import('@/pages/auth/resetPasswordSuccess'));
+const GoogleSuccessPage = lazy(() => import('@/pages/auth/GoogleSuccessPage'));
 const DashboardUser = lazy(() => import('@/pages/user/dashboardModule/dashboardUser'));
 const DanhSachKhoaHocUser = lazy(() => import('@/pages/user/coursesModule/danhSachKhoaHocUser'));
 const ChiTietKhoaHoc = lazy(() => import('@/pages/user/coursesModule/chiTietKhoaHoc'));
@@ -184,6 +185,7 @@ export const router = createBrowserRouter(
       <Route path="/" element={<AuthLayout />}>
         <Route path="dang-ky" element={<Suspense fallback={pageFallback}><RegisterPage /></Suspense>} />
         <Route path="dang-nhap" element={<Suspense fallback={pageFallback}><LoginPage /></Suspense>} />
+        <Route path="auth/google/success" element={<Suspense fallback={pageFallback}><GoogleSuccessPage /></Suspense>} />
         <Route path="quen-mat-khau" element={<Suspense fallback={pageFallback}><ForgotPasswordPage /></Suspense>} />
         <Route path="dat-lai-mat-khau" element={<Suspense fallback={pageFallback}><ResetPasswordForm /></Suspense>} />
         <Route path="dat-lai-mat-khau/thanh-cong" element={<Suspense fallback={pageFallback}><ResetPasswordSuccess /></Suspense>} />

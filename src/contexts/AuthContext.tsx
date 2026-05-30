@@ -18,6 +18,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   register: (email: string, username: string, password: string) => Promise<{ success: boolean; message: string }>;
+  loginWithGoogle: (googleToken: string) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -141,6 +142,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (googleToken: string) => {
+    setIsLoggingIn(true);
+    try {
+      const res = await authService.loginWithGoogle(googleToken);
+      if (res.success && res.data && typeof res.data === 'object' && 'token' in res.data) {
+        const { token: newToken } = res.data as { token: string; user: Record<string, unknown> };
+        localStorage.setItem('token', newToken);
+        setToken(newToken);
+        if ('user' in res.data) {
+          const rawUser = (res.data as { user: Record<string, unknown> }).user;
+          const normalizedUser: User = {
+            id: rawUser.id as string,
+            email: rawUser.email as string,
+            username: rawUser.username as string,
+            role: normalizeRole((rawUser.roleName || rawUser.role) as string | undefined),
+            createdAt: rawUser.createdAt as string,
+          };
+          localStorage.setItem('user', JSON.stringify(normalizedUser));
+          setUser(normalizedUser);
+        }
+        return { success: true, message: res.message };
+      }
+      return { success: false, message: res.message };
+    } catch {
+      return { success: false, message: 'Google login failed' };
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -173,6 +204,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         register,
+        loginWithGoogle,
         logout,
         refreshUser,
       }}

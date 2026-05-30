@@ -41,6 +41,7 @@ interface Course {
   price: number | null;
   originalPrice: number | null;
   subscriptionType?: string;
+  isFreeCourse?: boolean;
   instructor: {
     name: string;
     role: string;

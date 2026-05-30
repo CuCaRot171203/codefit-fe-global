@@ -9,6 +9,10 @@ export const API_ENDPOINTS = {
     refreshToken: `${API_BASE_URL}/api/auth/refresh-token`,
     forgotPassword: `${API_BASE_URL}/api/auth/forgot-password`,
     resetPassword: `${API_BASE_URL}/api/auth/reset-password`,
+    // Google OAuth
+    googleVerify: `${API_BASE_URL}/api/auth/google/verify`,
+    googleAuth: `${API_BASE_URL}/api/auth/google`,
+    googleCallback: `${API_BASE_URL}/api/auth/google/callback`,
   },
 
   // Courses

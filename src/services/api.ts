@@ -163,6 +163,9 @@ export const authService = {
 
   resetPassword: (token: string, newPassword: string) =>
     apiClient.post(API_ENDPOINTS.auth.resetPassword, { token, newPassword }),
+
+  loginWithGoogle: (googleToken: string) =>
+    apiClient.post(API_ENDPOINTS.auth.googleVerify, { googleToken }),
 };
 
 // ============ COURSE SERVICE ============
